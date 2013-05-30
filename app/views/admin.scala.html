@@ -1,0 +1,28 @@
+@(questions: List[Question], qForms:Form[Question])
+@import helper._
+
+@main("OPEN - QCM JAVA / JEE : Admin"){
+    <h1>@questions.size()</h1>
+
+<ul>
+    @for(question <- questions) {
+    <li>
+        @question.text
+
+        @form(routes.Application.deleteQuestion(question.id)) {
+        <input type="submit" value="Delete">
+        }
+    </li>
+    }
+</ul>
+
+<h2>Add a new task</h2>
+
+@form(routes.Application.createQuestion()) {
+
+@inputText(qForms("label"))
+
+<input type="submit" value="Create">
+
+}
+}

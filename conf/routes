@@ -4,6 +4,12 @@
 
 # Home page
 GET     /                           controllers.Application.index()
+# Admin page
+GET     /admin                      controllers.Admin.index()
+POST    /admin/:id/delete           controllers.Application.deleteQuestion(id: Long)
+POST    /admin/question             controllers.Application.createQuestion()
+#QCM page
+GET     /qcm                        controllers.Qcm.index()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

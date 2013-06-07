@@ -1,8 +1,10 @@
 @(questions: List[Question], qForms:Form[Question])
 @import helper._
 
+<a href="/">accueil</a>
+
 @main("OPEN - QCM JAVA / JEE : Admin"){
-    <h1>@questions.size()</h1>
+    <h1>Questions créées : (@questions.size())</h1>
 
 <ul>
     @for(question <- questions) {
@@ -12,17 +14,20 @@
         @form(routes.Application.deleteQuestion(question.id)) {
         <input type="submit" value="Delete">
         }
+        @form(routes.ResponseManager.editQuestion(question.id)) {
+        <input type="submit" value="Edit">
+        }
     </li>
     }
 </ul>
 
-<h2>Add a new task</h2>
+<h2>Créer une nouvelle question :</h2>
 
 @form(routes.Application.createQuestion()) {
 
-@inputText(qForms("label"))
+@inputText(field=qForms("text"), args = '_label -> "* Texte de la question :" )
 
-<input type="submit" value="Create">
+<input type="submit" value="Enregistrer">
 
 }
 }

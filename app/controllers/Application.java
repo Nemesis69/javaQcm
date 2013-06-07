@@ -23,6 +23,11 @@ public class Application extends Controller {
         return redirect(routes.Admin.index());
     }
 
+    public static Result editQuestion(Long id){
+        return redirect(routes.ResponseManager.index());
+    }
+
+
     public static Result deleteQuestion(Long id){
         if(null == id ){
             return badRequest(admin.render(QuestionController.listAll(), qForm));

@@ -23,6 +23,10 @@ public class QuestionController {
         finder.ref(id).delete();
     }
 
+    public static Question getQuestion(Long id){
+        return finder.ref(id);
+    }
+
     public static void createQuestion(Question q){
         q.save();
     }

@@ -19,29 +19,34 @@ public class ResponseManager extends Controller {
     private static Form<Response> rForm = Form.form(Response.class);
 
     public static Result index(){
-        return ok(views.html.possibleResponse.render(new Question(), rForm));
+        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ResponseController.listByQuestId(editedQuestion.id)));
     }
 
     public static Result editQuestion(Long id){
         setEditedQuestion(id);
-        return ok(views.html.possibleResponse.render(editedQuestion, rForm));
+        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ResponseController.listByQuestId(editedQuestion.id)));
     }
 
     public static Result addResponses(Long questionId){
         setEditedQuestion(questionId);
         Form<Response> filledForm = rForm.bindFromRequest();
         if(filledForm.hasErrors()){
-            return badRequest(views.html.possibleResponse.render(editedQuestion, filledForm));
+            return badRequest(views.html.possibleResponse.render(editedQuestion, filledForm, ResponseController.listByQuestId(editedQuestion.id)));
         }else{
             Response r = filledForm.get();
             r.questionRef = editedQuestion;
             ResponseController.save(r);
-            return ok(views.html.possibleResponse.render(editedQuestion, rForm));
+            return redirect(routes.ResponseManager.index());
         }
     }
 
     private static Question setEditedQuestion(Long questionId) {
         return (editedQuestion == null || editedQuestion.id != questionId) ? editedQuestion = QuestionController.getQuestion(questionId) : editedQuestion;
+    }
+
+    public static Result deleteResponse(Long id){
+        ResponseController.deleteResponse(id);
+        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ResponseController.listByQuestId(editedQuestion.id)));
     }
 
 }

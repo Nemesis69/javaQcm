@@ -1,9 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
+@(question: Question, qForms:Form[Response], responses: List[Response])
+@import helper._
 
-</body>
-</html>
+<a href="/admin">Retour à la liste des questions</a>
+
+@main("OPEN - QCM JAVA / JEE : Ajout de reponse à la question"){
+
+    <h2>Question en cours d'édition : (@question.text) , id : (@question.id) </h2>
+    <br>
+    <h3>liste des réponses disponibles  : </h3>
+    <ul>
+        @for(resp <- responses) {
+        <li>
+            @resp.libelle , @resp.id, @resp.questionRef.id
+
+            @form(routes.ResponseManager.deleteResponse(resp.id)) {
+            <input type="submit" value="Delete">
+            }
+        </li>
+        }
+    </ul>
+
+    <h2>Réponses possibles :</h2>
+
+    @form(routes.ResponseManager.addResponses(question.id)) {
+
+        @inputText(field = qForms("libelle"), args = '_label -> "* Réponse : ")
+        <input type="submit" value="Enregistrer">
+    }
+}

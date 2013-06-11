@@ -1,8 +1,7 @@
 package controllers;
 
-import models.Response;
+import models.Choice;
 import play.db.ebean.Model;
-import play.mvc.Controller;
 
 import java.util.List;
 
@@ -13,19 +12,19 @@ import java.util.List;
  * Time: 15:29
  * To change this template use File | Settings | File Templates.
  */
-public class ResponseController extends Model {
+public class ChoiceController extends Model {
 
-    public static Finder<Long, Response> finder = new Finder(Long.class, Response.class);
+    public static Finder<Long, Choice> finder = new Finder(Long.class, Choice.class);
 
-    public static List<Response> listAllResp(){
+    public static List<Choice> listAllChoices(){
         return finder.all();
     }
 
-    public static List<Response> listByQuestId(Long id){
+    public static List<Choice> listByQuestId(Long id){
         return finder.where().eq("questionId", id).findList();
     }
 
-    public static void save(Response r){
+    public static void save(Choice r){
         r.save();
     }
 

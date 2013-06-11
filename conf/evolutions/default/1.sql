@@ -3,6 +3,13 @@
 
 # --- !Ups
 
+create table choice (
+  id                        bigint not null,
+  libelle                   varchar(255),
+  questionId                bigint,
+  constraint pk_choice primary key (id))
+;
+
 create table question (
   id                        bigint not null,
   text                      varchar(255),
@@ -10,19 +17,12 @@ create table question (
   constraint pk_question primary key (id))
 ;
 
-create table response (
-  id                        bigint not null,
-  libelle                   varchar(255),
-  questionId                bigint,
-  constraint pk_response primary key (id))
-;
+create sequence choice_seq;
 
 create sequence question_seq;
 
-create sequence response_seq;
-
-alter table response add constraint fk_response_questionRef_1 foreign key (questionId) references question (id) on delete restrict on update restrict;
-create index ix_response_questionRef_1 on response (questionId);
+alter table choice add constraint fk_choice_questionRef_1 foreign key (questionId) references question (id) on delete restrict on update restrict;
+create index ix_choice_questionRef_1 on choice (questionId);
 
 
 
@@ -30,13 +30,13 @@ create index ix_response_questionRef_1 on response (questionId);
 
 SET REFERENTIAL_INTEGRITY FALSE;
 
-drop table if exists question;
+drop table if exists choice;
 
-drop table if exists response;
+drop table if exists question;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 
-drop sequence if exists question_seq;
+drop sequence if exists choice_seq;
 
-drop sequence if exists response_seq;
+drop sequence if exists question_seq;
 

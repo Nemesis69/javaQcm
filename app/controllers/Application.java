@@ -24,7 +24,7 @@ public class Application extends Controller {
     }
 
     public static Result editQuestion(Long id){
-        return redirect(routes.ResponseManager.index());
+        return redirect(routes.ChoiceManager.index());
     }
 
 

@@ -1,30 +1,30 @@
-@(question: Question, qForms:Form[Response], responses: List[Response])
+@(question: Question, qForms:Form[Choice], choices: List[Choice])
 @import helper._
 
 <a href="/admin">Retour à la liste des questions</a>
 
-@main("OPEN - QCM JAVA / JEE : Ajout de reponse à la question"){
+@main("OPEN - QCM JAVA / JEE : Ajout de choix à la question"){
 
     <h2>Question en cours d'édition : (@question.text) , id : (@question.id) </h2>
     <br>
-    <h3>liste des réponses disponibles  : </h3>
+    <h3>liste des choix disponibles  : </h3>
     <ul>
-        @for(resp <- responses) {
+        @for(choice <- choices) {
         <li>
-            @resp.libelle , @resp.id, @resp.questionRef.id
+            @choice.libelle , @choice.id, @choice.questionRef.id
 
-            @form(routes.ResponseManager.deleteResponse(resp.id)) {
+            @form(routes.ChoiceManager.deleteResponse(choice.id)) {
             <input type="submit" value="Delete">
             }
         </li>
         }
     </ul>
 
-    <h2>Réponses possibles :</h2>
+    <h2>Choix possibles :</h2>
 
-    @form(routes.ResponseManager.addResponses(question.id)) {
+    @form(routes.ChoiceManager.addResponses(question.id)) {
 
-        @inputText(field = qForms("libelle"), args = '_label -> "* Réponse : ")
+        @inputText(field = qForms("libelle"), args = '_label -> "* Choix : ")
         <input type="submit" value="Enregistrer">
     }
 }

@@ -13,15 +13,15 @@ import javax.persistence.*;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-public class Response extends Model{
+public class Choice extends Model {
 
     @Id
     public Long id;
 
     @Constraints.Required()
-   public String libelle;
+    public String libelle;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name= "questionId", nullable = false)
+    @JoinColumn(name = "questionId", nullable = false)
     public Question questionRef;
 }

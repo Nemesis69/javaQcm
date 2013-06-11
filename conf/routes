@@ -7,15 +7,15 @@ GET     /                           controllers.Application.index()
 # Admin page
 GET     /admin                      controllers.Admin.index()
 POST    /admin/:questionId/delete           controllers.Application.deleteQuestion(questionId: Long)
-POST    /admin/:questionId/edit             controllers.ResponseManager.editQuestion(questionId: Long)
+POST    /admin/:questionId/edit             controllers.ChoiceManager.editQuestion(questionId: Long)
 POST    /admin/question             controllers.Application.createQuestion()
-POST    /admin/reponsePossible      controllers.ResponseManager.addResponses(questionId: Long)
-POST    /admin/reponsePossible/:id/delete     controllers.ResponseManager.deleteResponse(id: Long)
+POST    /admin/reponsePossible      controllers.ChoiceManager.addResponses(questionId: Long)
+POST    /admin/reponsePossible/:id/delete     controllers.ChoiceManager.deleteResponse(id: Long)
 
 
 GET     /qcm                        controllers.Qcm.index()
 
-GET     /possibleResponse           controllers.ResponseManager.index()
+GET     /possibleResponse           controllers.ChoiceManager.index()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

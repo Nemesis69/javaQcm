@@ -1,4 +1,4 @@
-@(question: Question, qForms:Form[Response], responses: List[Response])
+@(question: Question, rForms:Form[Response], responses: List[Response])
 @import helper._
 
 <a href="/admin">Retour à la liste des questions</a>
@@ -10,12 +10,14 @@
     <h3>liste des réponses disponibles  : </h3>
     <ul>
         @for(resp <- responses) {
-        <li>
+        <li class="li_inline">
+            <div>
             @resp.libelle , @resp.id, @resp.questionRef.id
 
-            @form(routes.ResponseManager.deleteResponse(resp.id)) {
+            @form(routes.ResponseManager.deleteResponse(resp.id), args = 'class -> "inlineForms") {
             <input type="submit" value="Delete">
             }
+            </div>
         </li>
         }
     </ul>
@@ -24,7 +26,11 @@
 
     @form(routes.ResponseManager.addResponses(question.id)) {
 
-        @inputText(field = qForms("libelle"), args = '_label -> "* Réponse : ")
+        @inputText(field = rForms("libelle"), args = '_label -> "* Réponse : ")
+        <select name="status">
+              <option>OK</option>
+              <option>KO</option>
+        </select>
         <input type="submit" value="Enregistrer">
     }
 }

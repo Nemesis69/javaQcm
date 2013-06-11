@@ -24,4 +24,7 @@ public class Response extends Model{
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name= "questionId", nullable = false)
     public Question questionRef;
+
+    @Constraints.Required()
+    public String status;
 }

@@ -14,6 +14,7 @@ create table response (
   id                        bigint not null,
   libelle                   varchar(255),
   questionId                bigint,
+  status                    varchar(255),
   constraint pk_response primary key (id))
 ;
 

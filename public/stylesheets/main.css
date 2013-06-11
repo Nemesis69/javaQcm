@@ -35,6 +35,16 @@ div#buttons {
     width: 120px;
 }
 
+.tdCenter {
+    width: 80px;
+    text-align: center;
+    border: 1;
+}
+
+.tdQuestion{
+    width: 80px;
+}
+
 .li_inline {
     list-style: none;
     display: inline;

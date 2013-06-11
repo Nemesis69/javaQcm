@@ -6,23 +6,26 @@
 @main("OPEN - QCM JAVA / JEE : Admin"){
 <h1>Questions créées : (@questions.size())</h1>
 
-<ul>
     <table>
-    @for(question <- questions) {
-    <li class="li_inline">
-        <div id="general">
-            <div id="textquestion">@question.text</div>
-            <div id="buttons">@form(routes.Application.deleteQuestion(question.id), args = 'class -> "inlineForms") {
-            <input type="submit" value="Delete">
-            }
-            @form(routes.ChoiceManager.editQuestion(question.id), args = 'class -> "inlineForms") {
-            <input type="submit" value="Edit">
-            }</div>
-        </div>
-    </li>
-    </table>
+        <tr>
+            <th>Libellé</th>
+            <th>Actions</th>
+        </tr>
+        @for(question <- questions) {
+        <tr>
+            <td class="tdQuestion">
+                @question.text
+            </td>
+            <td>@form(routes.Application.deleteQuestion(question.id), args = 'class -> "inlineForms") {
+                <input type="submit" value="Delete">
+                }
+                @form(routes.ChoiceManager.editQuestion(question.id), args = 'class -> "inlineForms") {
+                <input type="submit" value="Edit">
+                }
+            </td>
+        </tr>
     }
-</ul>
+    </table>
 
 <h2>Créer une nouvelle question :</h2>
 

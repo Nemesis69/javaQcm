@@ -7,6 +7,7 @@ create table choice (
   id                        bigint not null,
   libelle                   varchar(255),
   questionId                bigint,
+  status                    varchar(255),
   constraint pk_choice primary key (id))
 ;
 

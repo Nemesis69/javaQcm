@@ -10,24 +10,36 @@
     <h3>liste des choix disponibles  : </h3>
     <ul>
         @for(choice <- choices) {
-        <li>
-            @choice.libelle , @choice.id, @choice.questionRef.id
+        <li class="li_inline">
+            <div>
+            @choice.libelle | status : @choice.status
 
             @form(routes.ChoiceManager.deleteResponse(choice.id), args = 'class -> "inlineForms") {
             <input type="submit" value="Delete">
             }
+            </div>
         </li>
         }
     </ul>
 
     <h2>Choix possibles :</h2>
-
+    <div>
     @form(routes.ChoiceManager.addResponses(question.id), args = 'class-> "inlineForms") {
-        @inputText(field = rForms("libelle"), args = '_label -> "* Réponse : ")
+        @inputText(field = rForms("libelle"), args = '_label -> "Réponse : (*) ")
+        <dl>
+        <dt><label for="status">Status : </label></dt>
+        <dd>
         <select name="status">
               <option>OK</option>
               <option>KO</option>
         </select>
-        <input type="submit" value="Enregistrer">
+        </dd>
+        </dl>
+        <dl>
+        <dd>
+            <input type="submit" value="Enregistrer">
+        </dd>
+        </dl>
     }
+    </div>
 }

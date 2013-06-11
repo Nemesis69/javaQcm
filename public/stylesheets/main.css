@@ -20,13 +20,42 @@ section {
     padding: 10px 30px;
 }
 
+div#general {
+    width : 180px;
+   display: inline;
+}
+
+div#textquestion {
+   display: inline;
+   width: 60px;
+}
+
+div#buttons {
+    display: inline;
+    width: 120px;
+}
+
 .li_inline {
+    list-style: none;
     display: inline;
 }
 
 .inlineForms {
     display: inline;
 }
+
+.inlineForms dd {
+    display: inline;
+}
+
+.inlineForms dd.info {
+    display: none;
+}
+
+.inlineForms dt {
+    display: inline;
+}
+
 
 #rForms dd {
     display: inline;

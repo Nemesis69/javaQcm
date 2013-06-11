@@ -2,13 +2,15 @@
 
 @import helper._
 @main("toto"){
+    <a href="/">Accueil</a>
     <h1>@questions.size() questions</h1>
 }
-<html>
-<head>
-    <title></title>
-</head>
-<body>
 
-</body>
-</html>
+<h2>QCM : </h2>
+
+        @for(quest <- questions){
+            <h3>@quest.text</h3>
+            @for(choice <- quest.possibleResp){
+                <li><input type="checkbox">@choice.libelle</li>
+            }
+        }

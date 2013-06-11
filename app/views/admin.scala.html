@@ -7,18 +7,20 @@
 <h1>Questions créées : (@questions.size())</h1>
 
 <ul>
+    <table>
     @for(question <- questions) {
     <li class="li_inline">
-        <div>
-            @question.text
-            @form(routes.Application.deleteQuestion(question.id), args = 'class -> "inlineForms") {
+        <div id="general">
+            <div id="textquestion">@question.text</div>
+            <div id="buttons">@form(routes.Application.deleteQuestion(question.id), args = 'class -> "inlineForms") {
             <input type="submit" value="Delete">
             }
-            @form(routes.ChoiceManager.editQuestion(question.id)) {
+            @form(routes.ChoiceManager.editQuestion(question.id), args = 'class -> "inlineForms") {
             <input type="submit" value="Edit">
-            }
+            }</div>
         </div>
     </li>
+    </table>
     }
 </ul>
 

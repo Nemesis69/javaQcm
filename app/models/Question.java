@@ -31,7 +31,7 @@ public class Question extends Model{
 
     public Long domainId;
 
-    /*@OneToMany(mappedBy = )
-    public List<Choice> possibleResp;*/
+    @OneToMany(mappedBy = "questionRef")
+    public List<Choice> possibleResp;
 
 }

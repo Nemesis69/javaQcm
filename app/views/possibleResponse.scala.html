@@ -1,4 +1,4 @@
-@(question: Question, qForms:Form[Choice], choices: List[Choice])
+@(question: Question, rForms:Form[Choice], choices: List[Choice])
 @import helper._
 
 <a href="/admin">Retour à la liste des questions</a>
@@ -13,7 +13,7 @@
         <li>
             @choice.libelle , @choice.id, @choice.questionRef.id
 
-            @form(routes.ChoiceManager.deleteResponse(choice.id)) {
+            @form(routes.ChoiceManager.deleteResponse(choice.id), args = 'class -> "inlineForms") {
             <input type="submit" value="Delete">
             }
         </li>
@@ -22,9 +22,12 @@
 
     <h2>Choix possibles :</h2>
 
-    @form(routes.ChoiceManager.addResponses(question.id)) {
-
-        @inputText(field = qForms("libelle"), args = '_label -> "* Choix : ")
+    @form(routes.ChoiceManager.addResponses(question.id), args = 'class-> "inlineForms") {
+        @inputText(field = rForms("libelle"), args = '_label -> "* Réponse : ")
+        <select name="status">
+              <option>OK</option>
+              <option>KO</option>
+        </select>
         <input type="submit" value="Enregistrer">
     }
 }

@@ -4,26 +4,27 @@
 <a href="/">accueil</a>
 
 @main("OPEN - QCM JAVA / JEE : Admin"){
-    <h1>Questions créées : (@questions.size())</h1>
+<h1>Questions créées : (@questions.size())</h1>
 
 <ul>
     @for(question <- questions) {
-    <li>
-        @question.text
-
-        @form(routes.Application.deleteQuestion(question.id)) {
-        <input type="submit" value="Delete">
-        }
-        @form(routes.ChoiceManager.editQuestion(question.id)) {
-        <input type="submit" value="Edit">
-        }
+    <li class="li_inline">
+        <div>
+            @question.text
+            @form(routes.Application.deleteQuestion(question.id), args = 'class -> "inlineForms") {
+            <input type="submit" value="Delete">
+            }
+            @form(routes.ChoiceManager.editQuestion(question.id)) {
+            <input type="submit" value="Edit">
+            }
+        </div>
     </li>
     }
 </ul>
 
 <h2>Créer une nouvelle question :</h2>
 
-@form(routes.Application.createQuestion()) {
+@form(routes.Application.createQuestion(), args = 'id -> "qForms") {
 
 @inputText(field=qForms("text"), args = '_label -> "* Texte de la question :" )
 

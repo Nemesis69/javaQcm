@@ -42,12 +42,20 @@ div#buttons {
 }
 
 .tdQuestion{
-    width: 80px;
+    width: auto;
+}
+
+.tdChoiceLibelle {
+    width: auto;
 }
 
 .li_inline {
     list-style: none;
     display: inline;
+}
+
+.li_nopuce {
+    list-style: none;
 }
 
 .inlineForms {

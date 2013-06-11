@@ -14,6 +14,8 @@ POST    /admin/reponsePossible/:id/delete     controllers.ChoiceManager.deleteRe
 
 
 GET     /qcm                        controllers.Qcm.index()
+POST    /qcm/validate           controllers.Qcm.validateResponses()
+
 
 GET     /possibleResponse           controllers.ChoiceManager.index()
 

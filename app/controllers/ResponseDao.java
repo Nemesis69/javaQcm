@@ -12,7 +12,7 @@ import java.util.List;
  * Time: 17:57
  * To change this template use File | Settings | File Templates.
  */
-public class ResponseController {
+public class ResponseDao {
     private static Finder<Long, Response> finder = new Finder(Long.class, Response.class);
 
     public static void saveResponse(Response r) {
@@ -21,5 +21,9 @@ public class ResponseController {
 
     public static List<Response> listAllResponses() {
         return finder.all();
+    }
+
+    public static List<Response> listByUser(String user) {
+        return finder.where().ilike("user", user).findList();
     }
 }

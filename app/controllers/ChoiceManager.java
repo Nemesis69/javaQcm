@@ -19,34 +19,34 @@ public class ChoiceManager extends Controller {
     private static Form<Choice> rForm = Form.form(Choice.class);
 
     public static Result index(){
-        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceController.listByQuestId(editedQuestion.id)));
+        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id)));
     }
 
     public static Result editQuestion(Long id){
         setEditedQuestion(id);
-        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceController.listByQuestId(editedQuestion.id)));
+        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id)));
     }
 
     public static Result addResponses(Long questionId){
         setEditedQuestion(questionId);
         Form<Choice> filledForm = rForm.bindFromRequest();
         if(filledForm.hasErrors()){
-            return badRequest(views.html.possibleResponse.render(editedQuestion, filledForm, ChoiceController.listByQuestId(editedQuestion.id)));
+            return badRequest(views.html.possibleResponse.render(editedQuestion, filledForm, ChoiceDao.listByQuestId(editedQuestion.id)));
         }else{
             Choice r = filledForm.get();
             r.questionRef = editedQuestion;
-            ChoiceController.save(r);
+            ChoiceDao.save(r);
             return redirect(routes.ChoiceManager.index());
         }
     }
 
     private static Question setEditedQuestion(Long questionId) {
-        return (editedQuestion == null || editedQuestion.id != questionId) ? editedQuestion = QuestionController.getQuestion(questionId) : editedQuestion;
+        return (editedQuestion == null || editedQuestion.id != questionId) ? editedQuestion = QuestionDao.getQuestion(questionId) : editedQuestion;
     }
 
     public static Result deleteResponse(Long id){
-        ChoiceController.deleteResponse(id);
-        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceController.listByQuestId(editedQuestion.id)));
+        ChoiceDao.deleteResponse(id);
+        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id)));
     }
 
 }

@@ -1,7 +1,6 @@
 package controllers;
 
 import models.Question;
-import play.*;
 import play.data.Form;
 import play.mvc.*;
 
@@ -17,9 +16,9 @@ public class Application extends Controller {
     public static Result createQuestion(){
         Form<Question> filledForm = qForm.bindFromRequest();
         if(filledForm.hasErrors()){
-            return badRequest(admin.render(QuestionController.listAll(), filledForm));
+            return badRequest(admin.render(QuestionDao.listAll(), filledForm));
         }
-        QuestionController.createQuestion(filledForm.get());
+        QuestionDao.createQuestion(filledForm.get());
         return redirect(routes.Admin.index());
     }
 
@@ -30,9 +29,9 @@ public class Application extends Controller {
 
     public static Result deleteQuestion(Long id){
         if(null == id ){
-            return badRequest(admin.render(QuestionController.listAll(), qForm));
+            return badRequest(admin.render(QuestionDao.listAll(), qForm));
         } else{
-            QuestionController.delete(id);
+            QuestionDao.delete(id);
             return redirect(routes.Admin.index());
         }
     }

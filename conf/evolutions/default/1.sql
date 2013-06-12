@@ -22,7 +22,15 @@ create table response (
   id                        bigint not null,
   choiceId                  bigint,
   questionId                bigint,
+  user                      varchar(255),
   constraint pk_response primary key (id))
+;
+
+create table user (
+  id                        bigint not null,
+  email                     varchar(255),
+  password                  varchar(255),
+  constraint pk_user primary key (id))
 ;
 
 create sequence choice_seq;
@@ -30,6 +38,8 @@ create sequence choice_seq;
 create sequence question_seq;
 
 create sequence response_seq;
+
+create sequence user_seq;
 
 alter table choice add constraint fk_choice_questionRef_1 foreign key (questionId) references question (id) on delete restrict on update restrict;
 create index ix_choice_questionRef_1 on choice (questionId);
@@ -50,6 +60,8 @@ drop table if exists question;
 
 drop table if exists response;
 
+drop table if exists user;
+
 SET REFERENTIAL_INTEGRITY TRUE;
 
 drop sequence if exists choice_seq;
@@ -57,4 +69,6 @@ drop sequence if exists choice_seq;
 drop sequence if exists question_seq;
 
 drop sequence if exists response_seq;
+
+drop sequence if exists user_seq;
 

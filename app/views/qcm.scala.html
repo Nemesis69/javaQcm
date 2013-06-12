@@ -2,8 +2,8 @@
 
 @import helper._
 @main("QCM"){
-    <a href="/">Accueil</a>
-    <h1>Nombre de question : @questions.size() questions</h1>
+    <h1>Nombre de questions :  @questions.size()</h1>
+    @if(score > 0 ){ <h1>score actuel : @score</h1> }
 }
 
 <h2>QCM : </h2>
@@ -18,4 +18,10 @@
                 <input type="submit" value="Valider"/>
             }
         }
+        </ul>
+
+        <ul>
+            @form(routes.Qcm.score()){
+                <input type="submit" value="Evaluer"/>
+            }
         </ul>

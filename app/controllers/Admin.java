@@ -17,7 +17,8 @@ public class Admin extends Controller{
 
     private static Form<Question> qForm = Form.form(Question.class);
 
+    @Security.Authenticated(SecurityManager.class)
     public static Result index(){
-        return  ok(views.html.admin.render(QuestionController.listAll(), qForm));
+        return  ok(views.html.admin.render(QuestionDao.listAll(), qForm));
     }
 }

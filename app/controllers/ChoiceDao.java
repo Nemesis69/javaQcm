@@ -12,7 +12,7 @@ import java.util.List;
  * Time: 15:29
  * To change this template use File | Settings | File Templates.
  */
-public class ChoiceController extends Model {
+public class ChoiceDao extends Model {
 
     public static Finder<Long, Choice> finder = new Finder(Long.class, Choice.class);
 

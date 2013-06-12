@@ -1,0 +1,10 @@
+@(lForm: Form[User])
+@import helper._
+
+@main("Login"){
+    @form(routes.LoginController.authenticate(), args = 'class -> "lForm"){
+        @inputText(field=lForm("email"), args = '_label -> " Email (*)   ")
+        @inputPassword(field=lForm("password"), args = '_label -> " Password (*)")
+        <input type="submit" value="Login">
+    }
+}

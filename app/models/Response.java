@@ -26,4 +26,5 @@ public class Response extends Model {
     @JoinColumn(name="questionId")
     public Question question;
 
+    public String user;
 }

@@ -7,6 +7,7 @@ import models.UserAnswer;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,12 +26,13 @@ public class Qcm extends Controller {
     private static Form qForm = Form.form(UserAnswer.class);
     private static Long score = Long.valueOf(0);
 
+    @Security.Authenticated(SecurityManager.class)
     public static Result index() {
         return ok(views.html.qcm.render(buildQcm(), qForm, score));
     }
 
     public static List<Question> buildQcm() {
-        List<Question> res = QuestionController.listAll();
+        List<Question> res = QuestionDao.listAll();
 
         return res;
     }
@@ -44,20 +46,23 @@ public class Qcm extends Controller {
         String[] questionIds = map.get("questionId");
         List<String> l = Arrays.asList(checkedVal);
         for (String s : l) {
-            Choice c = ChoiceController.finder.byId(Long.valueOf(s));
-            if ("OK".equals(c.status)) {
-                score += 1;
-            }
             Response response = new Response();
-            response.choice = c;
-            response.question = QuestionController.getQuestion(Long.valueOf(questionIds[0]));
-            ResponseController.saveResponse(response);
-
+            response.choice =  ChoiceDao.finder.byId(Long.valueOf(s));
+            response.question = QuestionDao.getQuestion(Long.valueOf(questionIds[0]));
+            response.user = session().get("user");
+            ResponseDao.saveResponse(response);
         }
         return redirect(routes.Qcm.index());
     }
 
     public static Result score() {
-        return TODO;
+        score = 0L;
+        List<Response> responses = ResponseDao.listByUser(session().get("user"));
+        for(Response response : responses){
+            Choice c = response.choice;
+            if("OK".equals(c.status))
+                score += 1;
+        }
+        return redirect(routes.Qcm.index());
     }
 }

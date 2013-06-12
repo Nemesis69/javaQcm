@@ -3,18 +3,22 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index()
+GET     /                                       controllers.Application.index()
 # Admin page
-GET     /admin                      controllers.Admin.index()
-POST    /admin/:questionId/delete           controllers.Application.deleteQuestion(questionId: Long)
-POST    /admin/:questionId/edit             controllers.ChoiceManager.editQuestion(questionId: Long)
-POST    /admin/question             controllers.Application.createQuestion()
-POST    /admin/reponsePossible      controllers.ChoiceManager.addResponses(questionId: Long)
-POST    /admin/reponsePossible/:id/delete     controllers.ChoiceManager.deleteResponse(id: Long)
+GET     /admin                                  controllers.Admin.index()
+POST    /admin/:questionId/delete               controllers.Application.deleteQuestion(questionId: Long)
+POST    /admin/:questionId/edit                 controllers.ChoiceManager.editQuestion(questionId: Long)
+POST    /admin/question                         controllers.Application.createQuestion()
+POST    /admin/reponsePossible                  controllers.ChoiceManager.addResponses(questionId: Long)
+POST    /admin/reponsePossible/:id/delete       controllers.ChoiceManager.deleteResponse(id: Long)
 
-
+#QCM page
 GET     /qcm                        controllers.Qcm.index()
-POST    /qcm/validate           controllers.Qcm.validateResponses()
+POST    /qcm/validate               controllers.Qcm.validateResponses()
+POST    /qcm/eval                   controllers.Qcm.score()
+
+GET     /login                      controllers.LoginController.index()
+POST    /authenticate               controllers.LoginController.authenticate()
 
 
 GET     /possibleResponse           controllers.ChoiceManager.index()

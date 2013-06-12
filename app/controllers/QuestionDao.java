@@ -12,7 +12,7 @@ import java.util.List;
  * Time: 11:14
  * To change this template use File | Settings | File Templates.
  */
-public class QuestionController {
+public class QuestionDao {
     private static Finder<Long, Question> finder = new Finder(Long.class, Question.class) ;
 
     protected static List<Question> listAll(){

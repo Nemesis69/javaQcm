@@ -19,6 +19,7 @@ POST    /qcm/eval                   controllers.Qcm.score()
 
 GET     /login                      controllers.LoginController.index()
 POST    /authenticate               controllers.LoginController.authenticate()
+GET     /logout                     controllers.LoginController.logout()
 
 
 GET     /possibleResponse           controllers.ChoiceManager.index()

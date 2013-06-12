@@ -35,7 +35,7 @@ public class LoginController extends Controller {
         }
     }
 
-    public Result logout(){
+    public static Result logout(){
         session().clear();
         return redirect(routes.Application.index());
     }

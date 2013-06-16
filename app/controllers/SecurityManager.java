@@ -4,6 +4,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Nemesis
@@ -15,6 +17,8 @@ public class SecurityManager extends Security.Authenticator {
 
     @Override
     public String getUsername(Http.Context ctx) {
+        Map<String, String[]> headers = ctx.request().headers();
+        LoginController.redirectUri = ctx.request().uri();
         return ctx.session().get("user");
     }
 

@@ -1,6 +1,9 @@
 package controllers;
 
+import controllers.dao.ChoiceDao;
+import controllers.dao.QuestionDao;
 import models.Choice;
+import models.Qcm;
 import models.Question;
 import play.data.Form;
 import play.mvc.*;
@@ -19,19 +22,19 @@ public class ChoiceManager extends Controller {
     private static Form<Choice> rForm = Form.form(Choice.class);
 
     public static Result index(){
-        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id)));
+        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm));
     }
 
     public static Result editQuestion(Long id){
         setEditedQuestion(id);
-        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id)));
+        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm));
     }
 
     public static Result addResponses(Long questionId){
         setEditedQuestion(questionId);
         Form<Choice> filledForm = rForm.bindFromRequest();
         if(filledForm.hasErrors()){
-            return badRequest(views.html.possibleResponse.render(editedQuestion, filledForm, ChoiceDao.listByQuestId(editedQuestion.id)));
+            return badRequest(views.html.possibleResponse.render(editedQuestion, filledForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm));
         }else{
             Choice r = filledForm.get();
             r.questionRef = editedQuestion;
@@ -46,7 +49,7 @@ public class ChoiceManager extends Controller {
 
     public static Result deleteResponse(Long id){
         ChoiceDao.deleteResponse(id);
-        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id)));
+        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm));
     }
 
 }

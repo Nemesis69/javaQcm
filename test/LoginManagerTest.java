@@ -1,13 +1,13 @@
 
 import controllers.routes;
 import org.junit.Test;
+import play.mvc.Content;
+import play.mvc.HandlerRef;
 import play.mvc.Result;
 import play.test.WithApplication;
 
 import static org.junit.Assert.assertEquals;
-import static play.test.Helpers.callAction;
-import static play.test.Helpers.fakeRequest;
-import static play.test.Helpers.status;
+import static play.test.Helpers.*;
 
 
 /**
@@ -20,10 +20,9 @@ import static play.test.Helpers.status;
 public class LoginManagerTest extends WithApplication {
     @Test
     public void loginTest(){
-        Result result = callAction(
-                routes.ref.LoginController.authenticate(),
-                fakeRequest().withSession("email", "bob@example.com")
-        );
-        assertEquals(200, status((play.mvc.Result) result));
+
+                Result result = routeAndCall(fakeRequest(POST, "/authenticate"));
+                assertEquals(400, status((play.mvc.Result) result));
+
     }
 }

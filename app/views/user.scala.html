@@ -1,0 +1,19 @@
+@(uForm: Form[User])
+@import helper._
+
+
+@main("Creation d'un utilisateur"){
+    @if(flash().get("error")!= null){
+        <p class="error">
+            @flash().get("error")
+        </p>
+}
+    @form(routes.UserController.createUser()){
+        @inputText(field=uForm("name"), args= '_label -> "Nom")
+        @inputText(field=uForm("surname"), args= '_label -> "Prénom")
+        @inputText(field=uForm("email"), args= '_label -> "Email (*)")
+        @inputPassword(field=uForm("password"), args= '_label -> "Password (*)")
+        <input type="submit" value="Créer"/>
+    }
+
+}

@@ -1,0 +1,9 @@
+
+# Users
+
+users:
+
+    - !!models.User
+        email:      nicolas.beucler@open-groupe.com
+        password:   secret
+    

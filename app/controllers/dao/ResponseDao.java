@@ -1,4 +1,4 @@
-package controllers;
+package controllers.dao;
 
 import models.Response;
 import play.db.ebean.Model.Finder;

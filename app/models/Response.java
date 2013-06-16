@@ -22,9 +22,11 @@ public class Response extends Model {
     @JoinColumn(name="choiceId")
     public Choice choice;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="questionId")
     public Question question;
 
-    public String user;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "userId")
+    public User user;
 }

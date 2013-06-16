@@ -6,20 +6,29 @@
 GET     /                                       controllers.Application.index()
 # Admin page
 GET     /admin                                  controllers.Admin.index()
-POST    /admin/:questionId/delete               controllers.Application.deleteQuestion(questionId: Long)
-POST    /admin/:questionId/edit                 controllers.ChoiceManager.editQuestion(questionId: Long)
-POST    /admin/question                         controllers.Application.createQuestion()
+POST    /admin/delete               controllers.Application.deleteQuestion(questionId: Long, qcmId: Long)
+POST    /admin/edit                 controllers.ChoiceManager.editQuestion(questionId: Long)
+POST    /admin/question                         controllers.Application.createQuestion(qcmId: Long)
 POST    /admin/reponsePossible                  controllers.ChoiceManager.addResponses(questionId: Long)
-POST    /admin/reponsePossible/:id/delete       controllers.ChoiceManager.deleteResponse(id: Long)
+POST    /admin/reponsePossible/delete       controllers.ChoiceManager.deleteResponse(id: Long)
+POST     /admin/qcm                             controllers.Admin.createQcm()
+POST    /admin/qcm/create                       controllers.QcmController.createQcm()
+POST    /admin/qcm/delete                   controllers.QcmController.deleteQcm(id: Long)
+POST    /admin/qcm/edit                     controllers.QcmController.editQcm(id: Long)
+POST    /admin/retourQst                        controllers.Admin.retourQuestions(id: Long)
 
 #QCM page
-GET     /qcm                        controllers.Qcm.index()
-POST    /qcm/validate               controllers.Qcm.validateResponses()
-POST    /qcm/eval                   controllers.Qcm.score()
+GET     /qcm                        controllers.QcmController.index()
+POST    /qcm/validate               controllers.QcmController.validateResponses()
+POST    /qcm/tester               controllers.QcmController.tester(id: Long)
+POST    /qcm/eval                   controllers.QcmController.score()
 
 GET     /login                      controllers.LoginController.index()
 POST    /authenticate               controllers.LoginController.authenticate()
 GET     /logout                     controllers.LoginController.logout()
+
+GET     /user                       controllers.UserController.index()
+POST    /createUser                 controllers.UserController.createUser()
 
 
 GET     /possibleResponse           controllers.ChoiceManager.index()

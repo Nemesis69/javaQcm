@@ -1,5 +1,6 @@
 package controllers;
 
+import controllers.dao.UserDao;
 import models.User;
 import play.data.Form;
 import play.mvc.Controller;
@@ -18,6 +19,8 @@ public class LoginController extends Controller {
 
     private static Form<User> lForm = new Form(User.class);
 
+    static String redirectUri;
+
     public static Result index() {
         return ok(views.html.login.render(lForm));
     }
@@ -30,8 +33,19 @@ public class LoginController extends Controller {
         else{
             User user = filledForm.get();
             session().clear();
-            session().put("user", user.email);
-            return redirect(routes.Application.index());
+            User dbUser = UserDao.findUserForAuth(user.email, user.password);
+            if(dbUser != null)
+                session().put("user", user.email);
+            else{
+                flash().put("logError", "User not found");
+                return badRequest(views.html.login.render(filledForm));
+            }
+            if(redirectUri.contains("admin"))
+                return redirect(routes.Admin.index());
+            else if (redirectUri.contains("qcm"))
+                return redirect(routes.QcmController.index());
+            else
+                return redirect(routes.Application.index());
         }
     }
 

@@ -1,16 +1,29 @@
-@(questions: List[Question], qForm: Form[UserAnswer], score: Long)
+@(questions: List[Question], qForm: Form[UserAnswer], score: Long, action: String, qcms: List[Qcm])
 
 @import helper._
 @main("QCM"){
-    <h1>Nombre de questions :  @questions.size()</h1>
-    @if(score > 0 ){ <h1>score actuel : @score</h1> }
-}
+    @if(action == null || "".equals(action)){
+        @if(qcms.size() > 0 ){
+            <h2>Qcms disponibles : </h2>
+            @for(qcm <- qcms){
+                @form(routes.QcmController.tester(qcm.id), args = 'class -> "inlineForms"){
+                    @qcm.name <input type="submit" value="GO"/>
+                }
+            }
+        }
+    }
 
-<h2>QCM : </h2>
+    @if("EVAL".equals(action)){
+        <h1>Nombre de questions :  @questions.size()</h1>
+        @if(score > 0 ){
+            <h1>score actuel : @score</h1>
+        }
+
+        <h2>QCM : @questions.get(0).qcm.name</h2>
         <ul>
         @for(quest <- questions){
             <h3>@quest.text</h3>
-            @form(routes.Qcm.validateResponses(), args = 'class -> "inlineForms"){
+            @form(routes.QcmController.validateResponses(), args = 'class -> "inlineForms"){
                 <input type="hidden" name="questionId" id="questionId" value="@quest.id"/>
                 @for(choice <- quest.possibleResp){
                     <input type="checkbox" name="selectedChoices" value="@choice.id"/>@choice.libelle<BR>
@@ -21,7 +34,9 @@
         </ul>
 
         <ul>
-            @form(routes.Qcm.score()){
+            @form(routes.QcmController.score()){
                 <input type="submit" value="Evaluer"/>
             }
         </ul>
+    }
+}

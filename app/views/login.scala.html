@@ -2,6 +2,12 @@
 @import helper._
 
 @main("Login"){
+     <h3>Log in or <a href="/user"> create user</a></h3>
+     @if(flash().get("logError")!= null){
+        <p class="error">
+            @flash().get("logError")
+        </p>
+     }
     @form(routes.LoginController.authenticate(), args = 'class -> "lForm"){
         @inputText(field=lForm("email"), args = '_label -> " Email (*)   ")
         @inputPassword(field=lForm("password"), args = '_label -> " Password (*)")

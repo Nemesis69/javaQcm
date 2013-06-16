@@ -26,4 +26,8 @@ public class User extends Model {
     @Constraints.Required
     public String password;
 
+    public String name;
+
+    public String surname;
+
 }

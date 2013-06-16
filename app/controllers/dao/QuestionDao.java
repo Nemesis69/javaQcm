@@ -1,4 +1,4 @@
-package controllers;
+package controllers.dao;
 
 import models.Question;
 import play.db.ebean.Model.*;
@@ -15,7 +15,7 @@ import java.util.List;
 public class QuestionDao {
     private static Finder<Long, Question> finder = new Finder(Long.class, Question.class) ;
 
-    protected static List<Question> listAll(){
+    public static List<Question> listAll(){
         return finder.all();
     }
 
@@ -29,5 +29,9 @@ public class QuestionDao {
 
     public static void createQuestion(Question q){
         q.save();
+    }
+
+    public static List<Question> listByQcmId(Long id) {
+        return finder.where().eq("qcmId", id).findList();
     }
 }

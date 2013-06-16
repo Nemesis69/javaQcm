@@ -1,9 +1,11 @@
-@(question: Question, rForms:Form[Choice], choices: List[Choice])
+@(question: Question, rForms:Form[Choice], choices: List[Choice], editedQcm: Qcm)
 @import helper._
 
-<a href="/admin">Retour à la liste des questions</a>
-
 @main("OPEN - QCM JAVA / JEE : Ajout de choix à la question"){
+    @form(routes.Admin.retourQuestions(editedQcm.id), args = 'class -> "inlineForms"){
+        <input type="submit" value="Retour questions"/>
+    }
+
 
     <h2>Question en cours d'édition : (@question.text) , id : (@question.id) </h2>
     <br>

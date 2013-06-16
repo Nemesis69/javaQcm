@@ -2,9 +2,7 @@ package models;
 
 import play.db.ebean.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import play.data.validation.Constraints.*;
 
@@ -31,7 +29,11 @@ public class Question extends Model{
 
     public Long domainId;
 
-    @OneToMany(mappedBy = "questionRef")
+    @OneToMany(mappedBy = "questionRef", cascade = CascadeType.ALL)
     public List<Choice> possibleResp;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "qcmId")
+    public Qcm qcm;
 
 }

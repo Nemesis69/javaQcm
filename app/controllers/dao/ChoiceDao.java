@@ -1,4 +1,4 @@
-package controllers;
+package controllers.dao;
 
 import models.Choice;
 import play.db.ebean.Model;

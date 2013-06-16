@@ -1,10 +1,53 @@
-@(questions: List[Question], qForms:Form[Question])
+@(questions: List[Question], qForms:Form[Question], action: String, qcms: List[Qcm], qcmForm: Form[Qcm], editedQcm: Qcm)
 @import helper._
 
 
 @main("OPEN - QCM JAVA / JEE : Admin"){
-<h1>Questions créées : (@questions.size())</h1>
+        @if(action == null || "".equals(action)){
+            <h1>Gestion des QCMs</h1>
+            @form(routes.Admin.createQcm(), args = 'class -> "inlineForms"){
+                <input type="submit" value="Créer un QCM"/>
+            }
+            @if(qcms.size() > 0){
+            <h2>liste des QCMs disponibles</h2>
+            <table>
+               <tr>
+                   <th>Nom</th>
+                   <th>Action</th>
+               </tr>
+                @for(oQcm <- qcms){
+                    <tr>
+                        <td>
+                            @oQcm.name
+                        </td>
+                        <td>
+                            @form(routes.QcmController.deleteQcm(oQcm.id), args = 'class -> "inlineForms") {
+                            <input type="submit" value="Delete">
+                            }
+                            @form(routes.QcmController.editQcm(oQcm.id), args = 'class -> "inlineForms") {
+                            <input type="submit" value="Edit">
+                            }
+                        </td>
 
+                    </tr>
+                }
+            </table>
+        }
+
+        }
+        @if("QCM".equals(action)){
+           @form(routes.QcmController.createQcm()){
+                @inputText(field=qcmForm("name"), args = '_label -> "Nom du QCM (*)")
+                <input type="submit" value="créer"/>
+            }
+        }
+        @if("QST".equals(action)){
+
+<h1>Questions créées : (@questions.size())</h1>
+    @form(routes.Admin.index()){
+        <input type="submit" value="Retour QCMs"/>
+    }
+    @if(questions.size()> 0){
     <table>
         <tr>
             <th>Libellé</th>
@@ -15,7 +58,7 @@
             <td class="tdQuestion">
                 @question.text
             </td>
-            <td>@form(routes.Application.deleteQuestion(question.id), args = 'class -> "inlineForms") {
+            <td>@form(routes.Application.deleteQuestion(question.id, editedQcm.id), args = 'class -> "inlineForms") {
                 <input type="submit" value="Delete">
                 }
                 @form(routes.ChoiceManager.editQuestion(question.id), args = 'class -> "inlineForms") {
@@ -25,14 +68,15 @@
         </tr>
     }
     </table>
+    }
 
 <h2>Créer une nouvelle question :</h2>
 
-@form(routes.Application.createQuestion(), args = 'id -> "qForms") {
+@form(routes.Application.createQuestion(editedQcm.id), args = 'id -> "qForms") {
 
 @inputText(field=qForms("text"), args = '_label -> "* Texte de la question :" )
-
 <input type="submit" value="Enregistrer">
 
+}
 }
 }

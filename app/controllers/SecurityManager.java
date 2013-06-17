@@ -1,5 +1,7 @@
 package controllers;
 
+import controllers.dao.UserDao;
+import models.User;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -19,6 +21,13 @@ public class SecurityManager extends Security.Authenticator {
     public String getUsername(Http.Context ctx) {
         Map<String, String[]> headers = ctx.request().headers();
         LoginController.redirectUri = ctx.request().uri();
+        if("/admin".equals(ctx.request().uri())){
+            User user = UserDao.findUserByMail(ctx.session().get("user"));
+            if(user != null && user.isAdmin)
+                return ctx.session().get("user");
+            else
+                return null;
+        }
         return ctx.session().get("user");
     }
 

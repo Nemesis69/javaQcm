@@ -40,9 +40,13 @@ public class LoginController extends Controller {
                 flash().put("logError", "User not found");
                 return badRequest(views.html.login.render(filledForm));
             }
-            if(redirectUri.contains("admin"))
+            if(redirectUri != null && (redirectUri.contains("admin") && dbUser.isAdmin))
                 return redirect(routes.Admin.index());
-            else if (redirectUri.contains("qcm"))
+            else if(redirectUri != null &&(redirectUri.contains("admin") && !dbUser.isAdmin)){
+                flash().put("AccessError", "Vous n'avez pas les autorisations pour accéder à cet écran");
+                return badRequest(views.html.login.render(filledForm));
+            }
+            else if (redirectUri != null &&(redirectUri.contains("qcm")))
                 return redirect(routes.QcmController.index());
             else
                 return redirect(routes.Application.index());

@@ -40,7 +40,6 @@ create table user (
   password                  varchar(255),
   name                      varchar(255),
   surname                   varchar(255),
-  is_admin                  tinyint(1) default 0,
   constraint pk_user primary key (id))
 ;
 

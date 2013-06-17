@@ -8,6 +8,11 @@
             @flash().get("logError")
         </p>
      }
+     @if(flash().get("AccessError") != null){
+        <p class="error">
+            @flash().get("AccessError")
+        </p>
+     }
     @form(routes.LoginController.authenticate(), args = 'class -> "lForm"){
         @inputText(field=lForm("email"), args = '_label -> " Email (*)   ")
         @inputPassword(field=lForm("password"), args = '_label -> " Password (*)")

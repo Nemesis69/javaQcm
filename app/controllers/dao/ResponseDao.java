@@ -1,6 +1,8 @@
 package controllers.dao;
 
+import models.Qcm;
 import models.Response;
+import models.User;
 import play.db.ebean.Model.Finder;
 
 import java.util.List;
@@ -24,6 +26,13 @@ public class ResponseDao {
     }
 
     public static List<Response> listByUser(String user) {
-        return finder.where().ilike("user", user).findList();
+        return finder.fetch("user").where().ilike("email", user).findList();
+    }
+
+    public static void deleteRespForUserAndQcm(Qcm evaluatedQcm, User user) {
+        List<Response> resps = finder.fetch("user").fetch("question.qcm").where().eq("question.qcm.id", evaluatedQcm.id).eq("user.email", user.email).findList();
+        for(Response rep : resps){
+            rep.delete();
+        }
     }
 }

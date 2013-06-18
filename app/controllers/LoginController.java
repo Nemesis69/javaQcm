@@ -22,13 +22,13 @@ public class LoginController extends Controller {
     static String redirectUri;
 
     public static Result index() {
-        return ok(views.html.login.render(lForm));
+        return ok(views.html.login.render(lForm, Utils.getConnectedUser()));
     }
 
     public static Result authenticate() {
         Form<User> filledForm = lForm.bindFromRequest();
         if(filledForm.hasErrors()){
-            return badRequest(views.html.login.render(filledForm));
+            return badRequest(views.html.login.render(filledForm, Utils.getConnectedUser()));
         }
         else{
             User user = filledForm.get();
@@ -38,13 +38,13 @@ public class LoginController extends Controller {
                 session().put("user", user.email);
             else{
                 flash().put("logError", "User not found");
-                return badRequest(views.html.login.render(filledForm));
+                return badRequest(views.html.login.render(filledForm, Utils.getConnectedUser()));
             }
             if(redirectUri != null && (redirectUri.contains("admin") && dbUser.isAdmin))
                 return redirect(routes.Admin.index());
             else if(redirectUri != null &&(redirectUri.contains("admin") && !dbUser.isAdmin)){
                 flash().put("AccessError", "Vous n'avez pas les autorisations pour accéder à cet écran");
-                return badRequest(views.html.login.render(filledForm));
+                return badRequest(views.html.login.render(filledForm, Utils.getConnectedUser()));
             }
             else if (redirectUri != null &&(redirectUri.contains("qcm")))
                 return redirect(routes.QcmController.index());
@@ -52,6 +52,7 @@ public class LoginController extends Controller {
                 return redirect(routes.Application.index());
         }
     }
+
 
     public static Result logout(){
         session().clear();

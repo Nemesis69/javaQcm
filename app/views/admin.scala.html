@@ -1,8 +1,8 @@
-@(questions: List[Question], qForms:Form[Question], action: String, qcms: List[Qcm], qcmForm: Form[Qcm], editedQcm: Qcm)
+@(questions: List[Question], qForms:Form[Question], action: String, qcms: List[Qcm], qcmForm: Form[Qcm], editedQcm: Qcm, user: User)
 @import helper._
 
 
-@main("OPEN - QCM JAVA / JEE : Admin"){
+@main("OPEN - QCM JAVA / JEE : Admin", user){
         @if(action == null || "".equals(action)){
             <h1>Gestion des QCMs</h1>
             @form(routes.Admin.createQcm(), args = 'class -> "inlineForms"){

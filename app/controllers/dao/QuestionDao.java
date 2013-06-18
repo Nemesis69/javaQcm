@@ -34,4 +34,8 @@ public class QuestionDao {
     public static List<Question> listByQcmId(Long id) {
         return finder.where().eq("qcmId", id).findList();
     }
+
+    public static void update(Question qDb) {
+        qDb.update(qDb.id);
+    }
 }

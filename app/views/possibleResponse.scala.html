@@ -1,13 +1,17 @@
-@(question: Question, rForms:Form[Choice], choices: List[Choice], editedQcm: Qcm)
+@(question: Question, rForms:Form[Choice], choices: List[Choice], editedQcm: Qcm, qForm: Form[Question], user: User)
 @import helper._
 
-@main("OPEN - QCM JAVA / JEE : Ajout de choix à la question"){
+@main("OPEN - QCM JAVA / JEE : Ajout de choix à la question", user){
     @form(routes.Admin.retourQuestions(editedQcm.id), args = 'class -> "inlineForms"){
         <input type="submit" value="Retour questions"/>
     }
 
 
-    <h2>Question en cours d'édition : (@question.text) , id : (@question.id) </h2>
+    <h2>Question en cours d'édition : (@question.text)</h2>
+    @form(routes.Application.modifieQuestLibelle(question.id, editedQcm.id), args = 'class -> "inlineForms"){
+        @inputText(field=qForm("text"), args = '_label -> "Libelle de la question :")
+        <input type="submit" value="Modifier"/>
+    }
     <br>
     <h3>liste des choix disponibles  : </h3>
     <ul>

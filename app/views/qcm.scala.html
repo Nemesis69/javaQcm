@@ -1,7 +1,7 @@
-@(questions: List[Question], qForm: Form[UserAnswer], score: Long, action: String, qcms: List[Qcm], answeredQuestIds: List[Long])
+@(questions: List[Question], qForm: Form[UserAnswer], score: Long, action: String, qcms: List[Qcm], answeredQuestIds: List[Long], user: User)
 
 @import helper._
-@main("QCM"){
+@main("QCM", user){
     @if(action == null || "".equals(action)){
         @if(qcms.size() > 0 ){
             <h2>Qcms disponibles : </h2>

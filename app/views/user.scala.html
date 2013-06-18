@@ -1,8 +1,8 @@
-@(uForm: Form[User])
+@(uForm: Form[User], user: User)
 @import helper._
 
 
-@main("Creation d'un utilisateur"){
+@main("Creation d'un utilisateur", user){
     @if(flash().get("error")!= null){
         <p class="error">
             @flash().get("error")

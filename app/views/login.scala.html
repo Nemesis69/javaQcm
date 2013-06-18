@@ -1,7 +1,7 @@
-@(lForm: Form[User])
+@(lForm: Form[User], user: User)
 @import helper._
 
-@main("Login"){
+@main("Login", user){
      <h3>Log in or <a href="/user"> create user</a></h3>
      @if(flash().get("logError")!= null){
         <p class="error">
@@ -13,9 +13,23 @@
             @flash().get("AccessError")
         </p>
      }
+    <table>
     @form(routes.LoginController.authenticate(), args = 'class -> "lForm"){
-        @inputText(field=lForm("email"), args = '_label -> " Email (*)   ")
-        @inputPassword(field=lForm("password"), args = '_label -> " Password (*)")
-        <input type="submit" value="Login">
+        <tr>
+            <td>
+            @inputText(field=lForm("email"), args = '_label -> " Email (*)   ")
+            </td>
+        </tr>
+        <tr>
+            <td>
+            @inputPassword(field=lForm("password"), args = '_label -> " Password (*)")
+            </td>
+        </tr>
+        <tr>
+            <td align="center">
+                <input type="submit" value="Login">
+            </td>
+        </tr>
     }
+    </table>
 }

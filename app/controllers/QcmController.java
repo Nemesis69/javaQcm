@@ -32,7 +32,7 @@ public class QcmController extends Controller {
 
     @Security.Authenticated(SecurityManager.class)
     public static Result index() {
-        return ok(qcm.render(buildQcm(), qForm, score, null, QcmDao.listAll(), answeredQuestIds));
+        return ok(qcm.render(buildQcm(), qForm, score, null, QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
     }
 
     public static List<Question> buildQcm() {
@@ -58,30 +58,30 @@ public class QcmController extends Controller {
             if (!answeredQuestIds.contains(response.question))
                 answeredQuestIds.add(response.question.id);
         }
-        return ok(qcm.render(buildQcm(), filledForm, score, "EVAL", null, answeredQuestIds));
+        return ok(qcm.render(buildQcm(), filledForm, score, "EVAL", null, answeredQuestIds, Utils.getConnectedUser()));
     }
 
     public static Result createQcm() {
         Form<Qcm> filledForm = qcmForm.bindFromRequest();
         if (filledForm.hasErrors()) {
-            return badRequest(admin.render(null, null, "QCM", QcmDao.listAll(), qcmForm, null));
+            return badRequest(admin.render(null, null, "QCM", QcmDao.listAll(), qcmForm, null, Utils.getConnectedUser()));
         }
         Qcm qcm = filledForm.get();
         QcmDao.save(qcm);
-        return ok(admin.render(QuestionDao.listByQcmId(qcm.id), qForm, "QST", null, null, qcm));
+        return ok(admin.render(QuestionDao.listByQcmId(qcm.id), qForm, "QST", null, null, qcm, Utils.getConnectedUser()));
     }
 
     public static Result deleteQcm(Long id) {
         QcmDao.delete(id);
         List<Qcm> qcms = QcmDao.listAll();
         if (qcms == null || qcms.size() == 0)
-            return ok(admin.render(null, null, "", new ArrayList<Qcm>(), null, null));
+            return ok(admin.render(null, null, "", new ArrayList<Qcm>(), null, null, Utils.getConnectedUser()));
         else
-            return ok(admin.render(null, null, "", qcms, qcmForm, null));
+            return ok(admin.render(null, null, "", qcms, qcmForm, null, Utils.getConnectedUser()));
     }
 
     public static Result editQcm(Long id) {
-        return ok(admin.render(QuestionDao.listByQcmId(id), qForm, "QST", null, null, QcmDao.findById(id)));
+        return ok(admin.render(QuestionDao.listByQcmId(id), qForm, "QST", null, null, QcmDao.findById(id), Utils.getConnectedUser()));
     }
 
     public static Result score() {
@@ -92,7 +92,7 @@ public class QcmController extends Controller {
             if ("OK".equals(c.status))
                 score += 1;
         }
-        return ok(qcm.render(buildQcm(), qForm, score, "EVAL", QcmDao.listAll(), answeredQuestIds));
+        return ok(qcm.render(buildQcm(), qForm, score, "EVAL", QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
     }
 
     /**
@@ -102,7 +102,7 @@ public class QcmController extends Controller {
      */
     public static Result tester(Long id) {
         initQcmForTest(id);
-        return ok(qcm.render(buildQcm(), qForm, score, "EVAL", QcmDao.listAll(), answeredQuestIds));
+        return ok(qcm.render(buildQcm(), qForm, score, "EVAL", QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
     }
 
     /**

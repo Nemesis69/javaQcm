@@ -16,6 +16,11 @@ header a {
     text-decoration: none;
 }
 
+
+.bandeauSup{
+    background: #235079;
+}
+
 section {
     padding: 10px 30px;
 }
@@ -48,8 +53,12 @@ div#menu{
     display:inline;
 }
 
-.divRight{
-    text-align: right;
+.divInline{
+    display: inline;
+}
+
+.menuRight{
+    float: right;
 }
 
 div#buttons {

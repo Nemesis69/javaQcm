@@ -1,7 +1,5 @@
-@(message: String)
+@(message: String, user: User)
 
-@main("OPEN - QCM JAVA JEE") {
-  <h1>Questionnaire d'auto-évaluation JAVA JEE</h1>
-  <a href="/admin">Admin</a><br>
-  <a href="/qcm">Questionnaire</a>
+@main("OPEN - QCMs", user) {
+  <h1>Questionnaires d'auto-évaluation</h1>
 }

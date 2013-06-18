@@ -6,21 +6,22 @@
 GET     /                                       controllers.Application.index()
 # Admin page
 GET     /admin                                  controllers.Admin.index()
-POST    /admin/delete               controllers.Application.deleteQuestion(questionId: Long, qcmId: Long)
-POST    /admin/edit                 controllers.ChoiceManager.editQuestion(questionId: Long)
+POST    /admin/delete                           controllers.Application.deleteQuestion(questionId: Long, qcmId: Long)
+POST    /admin/edit                             controllers.ChoiceManager.editQuestion(questionId: Long)
 POST    /admin/question                         controllers.Application.createQuestion(qcmId: Long)
 POST    /admin/reponsePossible                  controllers.ChoiceManager.addResponses(questionId: Long)
-POST    /admin/reponsePossible/delete       controllers.ChoiceManager.deleteResponse(id: Long)
+POST    /admin/reponsePossible/delete           controllers.ChoiceManager.deleteResponse(id: Long)
 POST     /admin/qcm                             controllers.Admin.createQcm()
 POST    /admin/qcm/create                       controllers.QcmController.createQcm()
-POST    /admin/qcm/delete                   controllers.QcmController.deleteQcm(id: Long)
-POST    /admin/qcm/edit                     controllers.QcmController.editQcm(id: Long)
+POST    /admin/qcm/delete                       controllers.QcmController.deleteQcm(id: Long)
+POST    /admin/qcm/edit                         controllers.QcmController.editQcm(id: Long)
 POST    /admin/retourQst                        controllers.Admin.retourQuestions(id: Long)
+POST    /admin/editQcmLibelle                   controllers.Application.modifieQuestLibelle(id: Long, qcmId: Long)
 
 #QCM page
 GET     /qcm                        controllers.QcmController.index()
 POST    /qcm/validate               controllers.QcmController.validateResponses()
-POST    /qcm/tester               controllers.QcmController.tester(id: Long)
+POST    /qcm/tester                 controllers.QcmController.tester(id: Long)
 POST    /qcm/eval                   controllers.QcmController.score()
 
 GET     /login                      controllers.LoginController.index()

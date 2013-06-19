@@ -6,6 +6,8 @@ import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Nemesis
@@ -21,7 +23,7 @@ public class UserController extends Controller {
         return ok(views.html.user.render(uForm, Utils.getConnectedUser()));
     }
 
-    public static Result createUser() {
+    public static Result createUser() throws NoSuchAlgorithmException {
         Form<User> filledForm = uForm.bindFromRequest();
         if (filledForm.hasErrors()) {
             return badRequest(views.html.user.render(filledForm, Utils.getConnectedUser()));
@@ -31,6 +33,8 @@ public class UserController extends Controller {
           flash().put("error", "cet utilisateur existe déjà");
             return badRequest(views.html.user.render(filledForm, Utils.getConnectedUser()));
         } else {
+            String pass = Utils.getMd5String(u);
+            u.password = pass;
             UserDao.createUser(u);
             return redirect(routes.Application.index());
         }

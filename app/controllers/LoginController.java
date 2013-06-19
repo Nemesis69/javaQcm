@@ -6,6 +6,8 @@ import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.security.NoSuchAlgorithmException;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,7 +27,7 @@ public class LoginController extends Controller {
         return ok(views.html.login.render(lForm, Utils.getConnectedUser()));
     }
 
-    public static Result authenticate() {
+    public static Result authenticate() throws NoSuchAlgorithmException {
         Form<User> filledForm = lForm.bindFromRequest();
         if(filledForm.hasErrors()){
             return badRequest(views.html.login.render(filledForm, Utils.getConnectedUser()));
@@ -33,7 +35,8 @@ public class LoginController extends Controller {
         else{
             User user = filledForm.get();
             session().clear();
-            User dbUser = UserDao.findUserForAuth(user.email, user.password);
+            String pass = Utils.getMd5String(user);
+            User dbUser = UserDao.findUserForAuth(user.email, pass);
             if(dbUser != null)
                 session().put("user", user.email);
             else{

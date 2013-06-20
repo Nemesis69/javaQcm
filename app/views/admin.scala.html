@@ -8,13 +8,16 @@
             @form(routes.Admin.createQcm(), args = 'class -> "inlineForms"){
                 <input type="submit" value="Créer un QCM"/>
             }
+            @form(routes.QcmController.importQcm(), args = 'class -> "inlineForms"){
+                <input type="submit" value="Importer un QCM"/>
+            }
             @if(qcms.size() > 0){
-            <h2>liste des QCMs disponibles</h2>
-            <table>
-               <tr>
-                   <th>Nom</th>
-                   <th>Action</th>
-               </tr>
+                <h2>liste des QCMs disponibles</h2>
+                <table>
+                <tr>
+                    <th>Nom</th>
+                    <th>Action</th>
+                </tr>
                 @for(oQcm <- qcms){
                     <tr>
                         <td>
@@ -27,17 +30,32 @@
                             @form(routes.QcmController.editQcm(oQcm.id), args = 'class -> "inlineForms") {
                             <input type="submit" value="Edit">
                             }
+                            @form(routes.QcmController.exportQcm(oQcm.id), args= 'class -> "inlineForms"){
+                                <input type="submit" value="Export">
+                            }
                         </td>
 
                     </tr>
                 }
-            </table>
-        }
+                </table>
+            }
 
         }
+
+        @if("IMP".equals(action)){
+            <h2>Import QCM</h2>
+            @form(routes.QcmController.createQcmFromXml(), args = 'class -> "inlineForms", 'enctype -> "multipart/form-data"){
+                <input type="file" name="xml" />
+                <input type="submit" value="Créer le QCM" />
+            }
+        }
+
         @if("QCM".equals(action)){
            @form(routes.QcmController.createQcm()){
                 @inputText(field=qcmForm("name"), args = '_label -> "Nom du QCM (*)")
+                @select(qcmForm("category"), utils.CategoryEnum.values().toList.map(v => (v.toString, Messages("" + v))),
+                        '_label -> "Category"
+                )
                 <input type="submit" value="créer"/>
             }
         }

@@ -17,6 +17,9 @@ POST    /admin/qcm/delete                       controllers.QcmController.delete
 POST    /admin/qcm/edit                         controllers.QcmController.editQcm(id: Long)
 POST    /admin/retourQst                        controllers.Admin.retourQuestions(id: Long)
 POST    /admin/editQcmLibelle                   controllers.Application.modifieQuestLibelle(id: Long, qcmId: Long)
+POST    /admin/exportQcm                        controllers.QcmController.exportQcm(id: Long)
+POST    /admin/importQcm                        controllers.QcmController.importQcm()
+POST    /admin/importQcm/import                 controllers.QcmController.createQcmFromXml()
 
 #QCM page
 GET     /qcm                        controllers.QcmController.index()

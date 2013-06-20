@@ -26,4 +26,5 @@ public class Qcm extends Model {
     @OneToMany(mappedBy = "qcm", cascade = CascadeType.ALL)
     public List<Question> questions;
 
+    public String category;
 }

@@ -3,6 +3,7 @@ package controllers;
 import controllers.dao.UserDao;
 import models.User;
 import play.mvc.Controller;
+import play.mvc.Result;
 
 import java.nio.charset.Charset;
 import java.security.MessageDigest;

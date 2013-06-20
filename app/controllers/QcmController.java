@@ -4,15 +4,24 @@ import controllers.dao.*;
 import models.*;
 import play.data.Form;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 import views.html.admin;
 import views.html.qcm;
+import xmlbeans.ObjectFactory;
+import xmlbeans.Questionnaire;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
 
 
 /**
@@ -97,6 +106,7 @@ public class QcmController extends Controller {
 
     /**
      * Action appelée lorsque l'utilisateur souhaite répondre à un QCM.
+     *
      * @param id l'identifiant du QCM auquel l'utilisateur veut répondre.
      * @return appelle le rendu de la page du QCM en question.
      */
@@ -105,8 +115,120 @@ public class QcmController extends Controller {
         return ok(qcm.render(buildQcm(), qForm, score, "EVAL", QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
     }
 
+    public static Result exportQcm(Long qcmId) throws DatatypeConfigurationException, JAXBException, IOException {
+        Qcm qcm = QcmDao.findById(qcmId);
+        Questionnaire xmlQuestionnaire = transFormDbQuestToXmlQuest(qcm);
+        JAXBContext jaxbContext = JAXBContext.newInstance(xmlQuestionnaire.getClass());
+        Marshaller marsh = jaxbContext.createMarshaller();
+        marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        File f = File.createTempFile("export_" + xmlQuestionnaire.getTitre(), ".xml");
+        marsh.marshal(xmlQuestionnaire, new FileOutputStream(f));
+        response().setHeader("Content-Disposition", "attachment; filename=" + f.getName().substring(0, ("export_" + qcm.name).length()) + ".xml");
+        response().setContentType("application/x-download");
+        return ok(f);
+    }
+
+    private static Questionnaire transFormDbQuestToXmlQuest(Qcm qcm) throws DatatypeConfigurationException {
+        List<Question> questions = qcm.questions;
+        ObjectFactory objectFactory = new ObjectFactory();
+        Questionnaire xmlQuestionnaire = objectFactory.createQuestionnaire();
+        xmlQuestionnaire.setTitre(qcm.name);
+        xmlQuestionnaire.setCategorie(qcm.category);
+        xmlQuestionnaire.setDateCreation(DatatypeFactory.newInstance().newXMLGregorianCalendar(getGregorianCalendar()));
+        xmlQuestionnaire.setVersion(Byte.valueOf("1"));
+        xmlQuestionnaire.getQuestion().addAll(generateXmlQuestionListFromDb(qcm.questions));
+        return xmlQuestionnaire;
+    }
+
+    public static Result importQcm() {
+        return ok(admin.render(null, null, "IMP", null, null, null, Utils.getConnectedUser()));
+    }
+
+    public static Result createQcmFromXml() throws JAXBException {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart filePart = body.getFile("xml");
+        if (filePart != null) {
+            String fileName = filePart.getFilename();
+            String contentType = filePart.getContentType();
+            File file = filePart.getFile();
+            JAXBContext jaxbContext = JAXBContext.newInstance(Questionnaire.class);
+            Unmarshaller unMarsh = jaxbContext.createUnmarshaller();
+            Questionnaire questionnaire = (Questionnaire)unMarsh.unmarshal(file);
+            persistXmlQuestToDbQuest(questionnaire);
+            return redirect(routes.Admin.index());
+        } else {
+            flash("error", "Missing file");
+            return redirect(routes.Admin.index());
+        }
+    }
+
+    private static void persistXmlQuestToDbQuest(Questionnaire questionnaire) {
+        Qcm qcm = new Qcm();
+        qcm.name = questionnaire.getTitre();
+        qcm.category = questionnaire.getCategorie();
+        qcm.questions = convertXmlQuestionsToDbQuest(questionnaire.getQuestion(), qcm);
+        QcmDao.save(qcm);
+    }
+
+    private static List<Question> convertXmlQuestionsToDbQuest(List<Questionnaire.Question> questions, Qcm qcm) {
+        List<Question> res = new ArrayList<Question>();
+        for(Questionnaire.Question q : questions){
+            Question dbQust = new Question();
+            dbQust.text = q.getIntitule();
+            dbQust.qcm = qcm;
+            res.add(dbQust);
+            dbQust.possibleResp = convertXmlRespToDbResp(q.getReponse(), dbQust);
+        }
+        return res;
+    }
+
+    private static List<Choice> convertXmlRespToDbResp(List<Questionnaire.Question.Reponse> responses, Question dbQust) {
+        List<Choice> res = new ArrayList<Choice>();
+        for(Questionnaire.Question.Reponse r : responses){
+            Choice c = new Choice();
+            c.libelle = r.getLibelle();
+            c.status = "true".equals(r.getSolution())?"OK":"KO";
+            res.add(c);
+        }
+        return res;
+    }
+
+    private static GregorianCalendar getGregorianCalendar() {
+        GregorianCalendar gCal = new GregorianCalendar();
+        gCal.setTime(new Date());
+        return gCal;
+    }
+
+    private static List<Questionnaire.Question> generateXmlQuestionListFromDb(List<Question> questions) throws DatatypeConfigurationException {
+        List<Questionnaire.Question> xmlQuestions = new ArrayList<Questionnaire.Question>();
+        for (Question q : questions) {
+            Questionnaire.Question xmlQuest = new Questionnaire.Question();
+            xmlQuest.setIntitule(q.text);
+            xmlQuest.setPonderation(Byte.valueOf("1"));
+            xmlQuest.setVersion(Byte.valueOf("1"));
+            xmlQuest.getReponse().addAll(generateXmlResponseFromDb(q.possibleResp));
+            xmlQuestions.add(xmlQuest);
+        }
+        return xmlQuestions;
+    }
+
+    private static List<Questionnaire.Question.Reponse> generateXmlResponseFromDb(List<Choice> possibleResp) throws DatatypeConfigurationException {
+        List<Questionnaire.Question.Reponse> xmlResponses = new ArrayList<Questionnaire.Question.Reponse>();
+        for (Choice c : possibleResp) {
+            Questionnaire.Question.Reponse resp = new Questionnaire.Question.Reponse();
+            resp.setDateCreation(DatatypeFactory.newInstance().newXMLGregorianCalendar(getGregorianCalendar()));
+            resp.setDateModification(DatatypeFactory.newInstance().newXMLGregorianCalendar(getGregorianCalendar()));
+            resp.setLibelle(c.libelle);
+            resp.setSolution("OK".equals(c.status) ? "true" : "false");
+            resp.setVersion(Byte.valueOf("1"));
+            xmlResponses.add(resp);
+        }
+        return xmlResponses;
+    }
+
     /**
      * Remet le score à 0, efface les anciennes réponses et initialise la valeur de référence pour le qcm.
+     *
      * @param id l'identifiant du QCM auquel l'utilisateur veut répondre.
      */
     private static void initQcmForTest(Long id) {

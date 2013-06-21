@@ -18,7 +18,7 @@ public class Response extends Model {
     @Id
     public Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="choiceId")
     public Choice choice;
 

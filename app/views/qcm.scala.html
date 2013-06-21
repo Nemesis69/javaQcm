@@ -1,4 +1,4 @@
-@(questions: List[Question], qForm: Form[UserAnswer], score: Long, action: String, qcms: List[Qcm], answeredQuestIds: List[Long], user: User)
+@(questions: List[Question], qForm: Form[UserAnswer], score: String, action: String, qcms: List[Qcm], answeredQuestIds: List[Long], user: User)
 
 @import helper._
 @main("QCM", user){
@@ -6,7 +6,7 @@
         @if(qcms.size() > 0 ){
             <h2>Qcms disponibles : </h2>
             @for(qcm <- qcms){
-                @form(routes.QcmController.tester(qcm.id), args = 'class -> "inlineForms"){
+                @form(routes.QcmController.tester(qcm.id)){
                     @qcm.name <input type="submit" value="GO"/>
                 }
             }
@@ -15,7 +15,7 @@
 
     @if("EVAL".equals(action)){
         <h1>Nombre de questions :  @questions.size()</h1>
-        @if(score > 0 ){
+        @if(score != null && !"0".equals(score)){
             <h1>score actuel : @score</h1>
         }
 

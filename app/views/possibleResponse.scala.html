@@ -29,7 +29,7 @@
             </td>
             <td>
             @form(routes.ChoiceManager.deleteResponse(choice.id), args = 'class -> "inlineForms") {
-            <input type="submit" value="Delete">
+                <input type="button" value="Delete" onclick="confirmDelete(this)">
             }
             </td>
          </tr>

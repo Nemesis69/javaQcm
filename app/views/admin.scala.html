@@ -26,6 +26,7 @@
                 <table>
                 <tr>
                     <th>Nom</th>
+                    <th>Score max du QCM</th>
                     <th>Action</th>
                 </tr>
                 @for(oQcm <- qcms){
@@ -33,15 +34,21 @@
                         <td>
                             @oQcm.name
                         </td>
+                        <td align="center">
+                            @oQcm.maxScore
+                        </td>
                         <td>
-                            @form(routes.QcmController.deleteQcm(oQcm.id), args = 'class -> "inlineForms") {
-                            <input type="submit" value="Delete">
-                            }
                             @form(routes.QcmController.editQcm(oQcm.id), args = 'class -> "inlineForms") {
-                            <input type="submit" value="Edit">
+                                <input type="submit" value="Edit">
+                            }
+                            @form(routes.QcmController.calculateMaxScore(oQcm.id), args = 'class -> "inlineForms"){
+                                <input type="submit" value="Calculer score max">
                             }
                             @form(routes.QcmController.exportQcm(oQcm.id), args= 'class -> "inlineForms"){
                                 <input type="submit" value="Export">
+                            }
+                            @form(routes.QcmController.deleteQcm(oQcm.id), args = 'class -> "inlineForms") {
+                                <input type="button" value="Delete" onclick="confirmDelete(this)">
                             }
                         </td>
 
@@ -87,7 +94,7 @@
                 @question.text
             </td>
             <td>@form(routes.Application.deleteQuestion(question.id, editedQcm.id), args = 'class -> "inlineForms") {
-                <input type="submit" value="Delete">
+                <input type="button" value="Delete" onclick="confirmDelete(this)">
                 }
                 @form(routes.ChoiceManager.editQuestion(question.id), args = 'class -> "inlineForms") {
                 <input type="submit" value="Edit">

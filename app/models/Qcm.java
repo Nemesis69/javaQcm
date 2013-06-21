@@ -4,6 +4,7 @@ import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -27,4 +28,6 @@ public class Qcm extends Model {
     public List<Question> questions;
 
     public String category;
+
+    public BigDecimal maxScore;
 }

@@ -1,6 +1,7 @@
 package controllers;
 
 import controllers.dao.ChoiceDao;
+import controllers.dao.QcmDao;
 import controllers.dao.QuestionDao;
 import controllers.dao.UserDao;
 import models.Choice;
@@ -9,6 +10,8 @@ import models.User;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
+
+import java.math.BigDecimal;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,6 +44,10 @@ public class ChoiceManager extends Controller {
         } else {
             Choice r = filledForm.get();
             r.questionRef = editedQuestion;
+            if(Utils.STATUS_OK.equals(r.status)){
+                editedQuestion.qcm.maxScore.add(BigDecimal.ONE);
+                QcmDao.save(editedQuestion.qcm);
+            }
             ChoiceDao.save(r);
             return redirect(routes.ChoiceManager.index());
         }
@@ -51,6 +58,10 @@ public class ChoiceManager extends Controller {
     }
 
     public static Result deleteResponse(Long id) {
+        Choice c = ChoiceDao.getById(id);
+        if(Utils.STATUS_OK.equals(c.status)){
+           c.questionRef.qcm.maxScore.subtract(BigDecimal.ONE);
+        }
         ChoiceDao.deleteResponse(id);
         return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm, Utils.getConnectedUser()));
     }

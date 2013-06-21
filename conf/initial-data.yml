@@ -4,6 +4,8 @@
 users:
 
     - !!models.User
+        name:        BEUCLER
+        surname:     Nicolas
         email:      nicolas.beucler@open-groupe.com
         password:   5ebe2294ecd0e0f08eab7690d2a6ee69
         isAdmin:    true

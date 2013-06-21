@@ -7,10 +7,8 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
-import tyrex.util.Configuration;
 import views.html.admin;
 import views.html.qcm;
-import xmlbeans.ObjectFactory;
 import xmlbeans.Questionnaire;
 
 import javax.xml.bind.JAXBContext;
@@ -18,10 +16,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 
@@ -38,19 +37,17 @@ public class QcmController extends Controller {
     private static Form<Qcm> qcmForm = Form.form(Qcm.class);
     private static Qcm evaluatedQcm;
     private static List<Long> answeredQuestIds = new ArrayList<Long>();
-    private static Long score = Long.valueOf(0);
+    private static BigDecimal score = BigDecimal.ZERO;
 
     @Security.Authenticated(SecurityManager.class)
     public static Result index() {
-        return ok(qcm.render(buildQcm(), qForm, score, null, QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
+        return ok(qcm.render(buildQcm(), qForm, null, null, QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
     }
 
     public static List<Question> buildQcm() {
         if (evaluatedQcm != null){
             List<Question> l = QuestionDao.listByQcmId(evaluatedQcm.id);
-            Random rand = new Random();
-            rand.setSeed(System.currentTimeMillis());
-            Collections.shuffle(l, rand);
+            Utils.shuffleList(l);
             return l;
         }
         else
@@ -73,7 +70,7 @@ public class QcmController extends Controller {
             if (!answeredQuestIds.contains(response.question))
                 answeredQuestIds.add(response.question.id);
         }
-        return ok(qcm.render(buildQcm(), filledForm, score, "EVAL", null, answeredQuestIds, Utils.getConnectedUser()));
+        return ok(qcm.render(buildQcm(), filledForm, null, "EVAL", null, answeredQuestIds, Utils.getConnectedUser()));
     }
 
     public static Result createQcm() {
@@ -100,14 +97,16 @@ public class QcmController extends Controller {
     }
 
     public static Result score() {
-        score = 0L;
+        BigDecimal maxScore = evaluatedQcm.maxScore;
+        score = BigDecimal.ZERO;
         List<Response> responses = ResponseDao.listByUser(session().get("user"));
         for (Response response : responses) {
             Choice c = response.choice;
-            if ("OK".equals(c.status))
-                score += 1;
+            if (Utils.STATUS_OK.equals(c.status))
+                score = score.add(BigDecimal.ONE);
         }
-        return ok(qcm.render(buildQcm(), qForm, score, "EVAL", QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
+        BigDecimal resultScore = score.multiply(BigDecimal.valueOf(20)).divide(maxScore, 1, RoundingMode.HALF_UP);
+        return ok(qcm.render(buildQcm(), qForm, resultScore.toString(), "EVAL", QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
     }
 
     /**
@@ -118,12 +117,12 @@ public class QcmController extends Controller {
      */
     public static Result tester(Long id) {
         initQcmForTest(id);
-        return ok(qcm.render(buildQcm(), qForm, score, "EVAL", QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
+        return ok(qcm.render(buildQcm(), qForm, null, "EVAL", QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
     }
 
     public static Result exportQcm(Long qcmId) throws DatatypeConfigurationException, JAXBException, IOException {
         Qcm qcm = QcmDao.findById(qcmId);
-        Questionnaire xmlQuestionnaire = convertDbQuestToXmlQuest(qcm);
+        Questionnaire xmlQuestionnaire = Utils.convertDbQuestToXmlQuest(qcm);
         JAXBContext jaxbContext = JAXBContext.newInstance(xmlQuestionnaire.getClass());
         Marshaller marsh = jaxbContext.createMarshaller();
         marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -132,18 +131,6 @@ public class QcmController extends Controller {
         response().setHeader("Content-Disposition", "attachment; filename=" + f.getName());
         response().setContentType("application/x-download");
         return ok(f);
-    }
-
-    private static Questionnaire convertDbQuestToXmlQuest(Qcm qcm) throws DatatypeConfigurationException {
-        List<Question> questions = qcm.questions;
-        ObjectFactory objectFactory = new ObjectFactory();
-        Questionnaire xmlQuestionnaire = objectFactory.createQuestionnaire();
-        xmlQuestionnaire.setTitre(qcm.name);
-        xmlQuestionnaire.setCategorie(qcm.category);
-        xmlQuestionnaire.setDateCreation(DatatypeFactory.newInstance().newXMLGregorianCalendar(getGregorianCalendar()));
-        xmlQuestionnaire.setVersion(Byte.valueOf("1"));
-        xmlQuestionnaire.getQuestion().addAll(generateXmlQuestionListFromDb(qcm.questions));
-        return xmlQuestionnaire;
     }
 
     public static Result importQcm() {
@@ -169,68 +156,28 @@ public class QcmController extends Controller {
         }
     }
 
+    public static Result calculateMaxScore(Long qcmId){
+        Qcm qcm = QcmDao.findById(qcmId);
+        qcm.maxScore = BigDecimal.ZERO;
+        List<Question> questions = qcm.questions;
+        for(Question q: questions){
+            List<Choice> choices = q.possibleResp;
+            for(Choice choice: choices){
+                if(Utils.STATUS_OK.equals(choice.status)){
+                    qcm.maxScore = qcm.maxScore.add(BigDecimal.ONE);
+                }
+            }
+        }
+        QcmDao.save(qcm);
+        return redirect(routes.Admin.index());
+    }
+
     private static void persistXmlQuestToDbQuest(Questionnaire questionnaire) {
         Qcm qcm = new Qcm();
         qcm.name = questionnaire.getTitre();
         qcm.category = questionnaire.getCategorie();
-        qcm.questions = convertXmlQuestionsToDbQuest(questionnaire.getQuestion(), qcm);
+        qcm.questions = Utils.convertXmlQuestionsToDbQuest(questionnaire.getQuestion(), qcm);
         QcmDao.save(qcm);
-    }
-
-    private static List<Question> convertXmlQuestionsToDbQuest(List<Questionnaire.Question> questions, Qcm qcm) {
-        List<Question> res = new ArrayList<Question>();
-        for(Questionnaire.Question q : questions){
-            Question dbQust = new Question();
-            dbQust.text = q.getIntitule();
-            dbQust.qcm = qcm;
-            res.add(dbQust);
-            dbQust.possibleResp = convertXmlRespToDbResp(q.getReponse(), dbQust);
-        }
-        return res;
-    }
-
-    private static List<Choice> convertXmlRespToDbResp(List<Questionnaire.Question.Reponse> responses, Question dbQust) {
-        List<Choice> res = new ArrayList<Choice>();
-        for(Questionnaire.Question.Reponse r : responses){
-            Choice c = new Choice();
-            c.libelle = r.getLibelle();
-            c.status = "true".equals(r.getSolution())?"OK":"KO";
-            res.add(c);
-        }
-        return res;
-    }
-
-    private static GregorianCalendar getGregorianCalendar() {
-        GregorianCalendar gCal = new GregorianCalendar();
-        gCal.setTime(new Date());
-        return gCal;
-    }
-
-    private static List<Questionnaire.Question> generateXmlQuestionListFromDb(List<Question> questions) throws DatatypeConfigurationException {
-        List<Questionnaire.Question> xmlQuestions = new ArrayList<Questionnaire.Question>();
-        for (Question q : questions) {
-            Questionnaire.Question xmlQuest = new Questionnaire.Question();
-            xmlQuest.setIntitule(q.text);
-            xmlQuest.setPonderation(Byte.valueOf("1"));
-            xmlQuest.setVersion(Byte.valueOf("1"));
-            xmlQuest.getReponse().addAll(generateXmlResponseFromDb(q.possibleResp));
-            xmlQuestions.add(xmlQuest);
-        }
-        return xmlQuestions;
-    }
-
-    private static List<Questionnaire.Question.Reponse> generateXmlResponseFromDb(List<Choice> possibleResp) throws DatatypeConfigurationException {
-        List<Questionnaire.Question.Reponse> xmlResponses = new ArrayList<Questionnaire.Question.Reponse>();
-        for (Choice c : possibleResp) {
-            Questionnaire.Question.Reponse resp = new Questionnaire.Question.Reponse();
-            resp.setDateCreation(DatatypeFactory.newInstance().newXMLGregorianCalendar(getGregorianCalendar()));
-            resp.setDateModification(DatatypeFactory.newInstance().newXMLGregorianCalendar(getGregorianCalendar()));
-            resp.setLibelle(c.libelle);
-            resp.setSolution("OK".equals(c.status) ? "true" : "false");
-            resp.setVersion(Byte.valueOf("1"));
-            xmlResponses.add(resp);
-        }
-        return xmlResponses;
     }
 
     /**
@@ -239,7 +186,7 @@ public class QcmController extends Controller {
      * @param id l'identifiant du QCM auquel l'utilisateur veut répondre.
      */
     private static void initQcmForTest(Long id) {
-        score = 0L;
+        score = BigDecimal.ZERO;
         answeredQuestIds.clear();
         evaluatedQcm = QcmDao.findById(id);
         User user = UserDao.findUserByMail(session().get("user"));

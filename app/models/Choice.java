@@ -4,6 +4,7 @@ import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,6 +25,9 @@ public class Choice extends Model {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "questionId", nullable = false)
     public Question questionRef;
+
+    @OneToMany(mappedBy = "choice", cascade = CascadeType.ALL)
+    public List<Response> responses;
 
     @Constraints.Required()
     public String status;

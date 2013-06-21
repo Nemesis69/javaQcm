@@ -32,4 +32,7 @@ public class ChoiceDao extends Model {
         finder.ref(id).delete();
     }
 
+    public static Choice getById(Long id) {
+        return finder.byId(id);
+    }
 }

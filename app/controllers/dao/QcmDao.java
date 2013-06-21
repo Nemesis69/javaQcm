@@ -24,7 +24,10 @@ public class QcmDao {
     }
 
     public static void save(Qcm qcm) {
-        qcm.save();
+        if(qcm.id == null)
+            qcm.save();
+        else
+            qcm.update();
     }
 
     public static Qcm findByName(String name){

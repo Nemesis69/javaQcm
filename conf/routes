@@ -20,6 +20,7 @@ POST    /admin/editQcmLibelle                   controllers.Application.modifieQ
 POST    /admin/exportQcm                        controllers.QcmController.exportQcm(id: Long)
 POST    /admin/importQcm                        controllers.QcmController.importQcm()
 POST    /admin/importQcm/import                 controllers.QcmController.createQcmFromXml()
+POST    /admin/maxScore                         controllers.QcmController.calculateMaxScore(id: Long)
 
 #QCM page
 GET     /qcm                        controllers.QcmController.index()

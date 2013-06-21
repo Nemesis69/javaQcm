@@ -4,7 +4,7 @@
 # --- !Ups
 
 create table choice (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   libelle                   varchar(255),
   questionId                bigint,
   status                    varchar(255),
@@ -12,15 +12,16 @@ create table choice (
 ;
 
 create table qcm (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   name                      varchar(255),
   category                  varchar(255),
+  max_score                 decimal(38),
   constraint uq_qcm_name unique (name),
   constraint pk_qcm primary key (id))
 ;
 
 create table question (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   text                      varchar(255),
   domain_id                 bigint,
   qcmId                     bigint,
@@ -28,7 +29,7 @@ create table question (
 ;
 
 create table response (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   choiceId                  bigint,
   questionId                bigint,
   userId                    bigint,
@@ -36,24 +37,14 @@ create table response (
 ;
 
 create table user (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   email                     varchar(255),
   password                  varchar(255),
   name                      varchar(255),
   surname                   varchar(255),
-  is_admin                  boolean,
+  is_admin                  tinyint(1) default 0,
   constraint pk_user primary key (id))
 ;
-
-create sequence choice_seq;
-
-create sequence qcm_seq;
-
-create sequence question_seq;
-
-create sequence response_seq;
-
-create sequence user_seq;
 
 alter table choice add constraint fk_choice_questionRef_1 foreign key (questionId) references question (id) on delete restrict on update restrict;
 create index ix_choice_questionRef_1 on choice (questionId);
@@ -70,27 +61,17 @@ create index ix_response_user_5 on response (userId);
 
 # --- !Downs
 
-SET REFERENTIAL_INTEGRITY FALSE;
+SET FOREIGN_KEY_CHECKS=0;
 
-drop table if exists choice;
+drop table choice;
 
-drop table if exists qcm;
+drop table qcm;
 
-drop table if exists question;
+drop table question;
 
-drop table if exists response;
+drop table response;
 
-drop table if exists user;
+drop table user;
 
-SET REFERENTIAL_INTEGRITY TRUE;
-
-drop sequence if exists choice_seq;
-
-drop sequence if exists qcm_seq;
-
-drop sequence if exists question_seq;
-
-drop sequence if exists response_seq;
-
-drop sequence if exists user_seq;
+SET FOREIGN_KEY_CHECKS=1;
 

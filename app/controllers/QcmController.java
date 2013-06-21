@@ -7,6 +7,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
+import tyrex.util.Configuration;
 import views.html.admin;
 import views.html.qcm;
 import xmlbeans.ObjectFactory;
@@ -45,8 +46,13 @@ public class QcmController extends Controller {
     }
 
     public static List<Question> buildQcm() {
-        if (evaluatedQcm != null)
-            return QuestionDao.listByQcmId(evaluatedQcm.id);
+        if (evaluatedQcm != null){
+            List<Question> l = QuestionDao.listByQcmId(evaluatedQcm.id);
+            Random rand = new Random();
+            rand.setSeed(System.currentTimeMillis());
+            Collections.shuffle(l, rand);
+            return l;
+        }
         else
             return new ArrayList<Question>();
     }
@@ -117,18 +123,18 @@ public class QcmController extends Controller {
 
     public static Result exportQcm(Long qcmId) throws DatatypeConfigurationException, JAXBException, IOException {
         Qcm qcm = QcmDao.findById(qcmId);
-        Questionnaire xmlQuestionnaire = transFormDbQuestToXmlQuest(qcm);
+        Questionnaire xmlQuestionnaire = convertDbQuestToXmlQuest(qcm);
         JAXBContext jaxbContext = JAXBContext.newInstance(xmlQuestionnaire.getClass());
         Marshaller marsh = jaxbContext.createMarshaller();
         marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        File f = File.createTempFile("export_" + xmlQuestionnaire.getTitre(), ".xml");
+        File f = File.createTempFile("export-" + xmlQuestionnaire.getTitre().replaceAll("/", "-").replaceAll(" ", "")+"-", ".xml");
         marsh.marshal(xmlQuestionnaire, new FileOutputStream(f));
-        response().setHeader("Content-Disposition", "attachment; filename=" + f.getName().substring(0, ("export_" + qcm.name).length()) + ".xml");
+        response().setHeader("Content-Disposition", "attachment; filename=" + f.getName());
         response().setContentType("application/x-download");
         return ok(f);
     }
 
-    private static Questionnaire transFormDbQuestToXmlQuest(Qcm qcm) throws DatatypeConfigurationException {
+    private static Questionnaire convertDbQuestToXmlQuest(Qcm qcm) throws DatatypeConfigurationException {
         List<Question> questions = qcm.questions;
         ObjectFactory objectFactory = new ObjectFactory();
         Questionnaire xmlQuestionnaire = objectFactory.createQuestionnaire();
@@ -155,9 +161,10 @@ public class QcmController extends Controller {
             Unmarshaller unMarsh = jaxbContext.createUnmarshaller();
             Questionnaire questionnaire = (Questionnaire)unMarsh.unmarshal(file);
             persistXmlQuestToDbQuest(questionnaire);
+            flash("success", "QCM bien importé");
             return redirect(routes.Admin.index());
         } else {
-            flash("error", "Missing file");
+            flash("error", "Pas de fichier en entrée de l'import");
             return redirect(routes.Admin.index());
         }
     }

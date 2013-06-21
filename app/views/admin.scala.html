@@ -4,6 +4,16 @@
 
 @main("OPEN - QCM JAVA / JEE : Admin", user){
         @if(action == null || "".equals(action)){
+            @if(flash().get("error") != null){
+                <p class="error">
+                    @flash().get("error")
+                </p>
+            }
+            @if(flash().get("success") != null) {
+                <p class="success">
+                    @flash().get("success")
+                </p>
+            }
             <h1>Gestion des QCMs</h1>
             @form(routes.Admin.createQcm(), args = 'class -> "inlineForms"){
                 <input type="submit" value="Créer un QCM"/>

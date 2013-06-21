@@ -29,6 +29,10 @@ p.error{
     color: #c00;
 }
 
+p.success {
+    color: #677E52;
+}
+
 dd.info {
     display: none;
 }

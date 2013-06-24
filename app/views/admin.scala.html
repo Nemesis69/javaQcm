@@ -71,7 +71,7 @@
            @form(routes.QcmController.createQcm()){
                 @inputText(field=qcmForm("name"), args = '_label -> "Nom du QCM (*)")
                 @select(qcmForm("category"), utils.CategoryEnum.values().toList.map(v => (v.toString, Messages("" + v))),
-                        '_label -> "Category"
+                        '_label -> "Categorie"
                 )
                 <input type="submit" value="créer"/>
             }
@@ -110,6 +110,9 @@
 @form(routes.Application.createQuestion(editedQcm.id), args = 'id -> "qForms") {
 
 @inputText(field=qForms("text"), args = '_label -> "* Texte de la question :" )
+@select(qForms("domainIdValue"), QcmController.listDomains().map(v => (v.id.toString, Messages("" + v.libelle))),
+'_label -> "Domaine"
+)
 <input type="submit" value="Enregistrer">
 
 }

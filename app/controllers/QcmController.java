@@ -172,6 +172,10 @@ public class QcmController extends Controller {
         return redirect(routes.Admin.index());
     }
 
+    public static List<Domain> listDomains(){
+        return DomainDao.listAll();
+    }
+
     private static void persistXmlQuestToDbQuest(Questionnaire questionnaire) {
         Qcm qcm = new Qcm();
         qcm.name = questionnaire.getTitre();

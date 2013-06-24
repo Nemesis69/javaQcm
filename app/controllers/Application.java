@@ -1,5 +1,6 @@
 package controllers;
 
+import controllers.dao.DomainDao;
 import controllers.dao.QcmDao;
 import controllers.dao.QuestionDao;
 import controllers.dao.UserDao;
@@ -24,11 +25,12 @@ public class Application extends Controller {
     public static Result createQuestion(Long qcmId) {
         Qcm qcm = QcmDao.findById(qcmId);
         Form<Question> filledForm = qForm.bindFromRequest();
-        if (filledForm.hasErrors()) {
+        if (filledForm.hasErrors() && filledForm.errors().size() > 1) {
             return badRequest(admin.render(QuestionDao.listByQcmId(qcmId), filledForm, "QST", null, null, qcm, Utils.getConnectedUser()));
         }
         Question q = filledForm.get();
         q.qcm = qcm;
+        q.domain = DomainDao.getById(Long.valueOf(q.domainIdValue));
         QuestionDao.createQuestion(q);
         return ok(admin.render(QuestionDao.listByQcmId(qcmId), qForm, "QST", null, null, qcm, Utils.getConnectedUser()));
     }

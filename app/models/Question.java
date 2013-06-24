@@ -27,7 +27,9 @@ public class Question extends Model{
     @Required()
     public String text;
 
-    public Long domainId;
+    @ManyToOne
+    @JoinColumn(name="domainId")
+    public Domain domain;
 
     @OneToMany(mappedBy = "questionRef", cascade = CascadeType.ALL)
     public List<Choice> possibleResp;
@@ -35,5 +37,7 @@ public class Question extends Model{
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "qcmId")
     public Qcm qcm;
+
+    public String domainIdValue;
 
 }

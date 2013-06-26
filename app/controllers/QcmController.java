@@ -7,6 +7,8 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
+import utils.CategoryEnum;
+import utils.Utils;
 import views.html.admin;
 import views.html.qcm;
 import xmlbeans.Questionnaire;
@@ -70,7 +72,12 @@ public class QcmController extends Controller {
             if (!answeredQuestIds.contains(response.question))
                 answeredQuestIds.add(response.question.id);
         }
-        return ok(qcm.render(buildQcm(), filledForm, null, "EVAL", null, answeredQuestIds, Utils.getConnectedUser()));
+        Qcm q = QuestionDao.getQuestion(uAns.questionId).qcm;
+        List<Question> questions = q.questions;
+        for(Long qId : answeredQuestIds){
+            questions.remove(QuestionDao.getQuestion(qId));
+        }
+        return ok(qcm.render(questions, filledForm, null, "EVAL", null, answeredQuestIds, Utils.getConnectedUser()));
     }
 
     public static Result createQcm() {
@@ -79,8 +86,18 @@ public class QcmController extends Controller {
             return badRequest(admin.render(null, null, "QCM", QcmDao.listAll(), qcmForm, null, Utils.getConnectedUser()));
         }
         Qcm qcm = filledForm.get();
-        QcmDao.save(qcm);
+        QcmDao.saveOrUpdate(qcm);
         return ok(admin.render(QuestionDao.listByQcmId(qcm.id), qForm, "QST", null, null, qcm, Utils.getConnectedUser()));
+    }
+
+    public static Result majQcm(){
+        Form<Qcm> filledForm = qcmForm.bindFromRequest();
+        if(filledForm.hasErrors()){
+            return badRequest(admin.render(null, null, "QCM", QcmDao.listAll(), filledForm, null, Utils.getConnectedUser()));
+        }
+        Qcm q = filledForm.get();
+        QcmDao.saveOrUpdate(q);
+        return ok(admin.render(QuestionDao.listByQcmId(q.id), qForm, "QST", null, filledForm, QcmDao.findById(q.id), Utils.getConnectedUser()));
     }
 
     public static Result deleteQcm(Long id) {
@@ -93,7 +110,18 @@ public class QcmController extends Controller {
     }
 
     public static Result editQcm(Long id) {
-        return ok(admin.render(QuestionDao.listByQcmId(id), qForm, "QST", null, null, QcmDao.findById(id), Utils.getConnectedUser()));
+        return ok(admin.render(QuestionDao.listByQcmId(id), qForm, "QST", null, qcmForm.fill(QcmDao.findById(id)), QcmDao.findById(id), Utils.getConnectedUser()));
+    }
+
+    public static Result updateQcm(Long id){
+        Form<Qcm> filledForm = qcmForm.bindFromRequest();
+        if(filledForm.hasErrors()){
+            return badRequest(admin.render(QuestionDao.listByQcmId(id), qForm, "QST", null, filledForm, QcmDao.findById(id), Utils.getConnectedUser()));
+        }else{
+            Qcm qcm = filledForm.get();
+            QcmDao.saveOrUpdate(qcm);
+            return ok(admin.render(QuestionDao.listByQcmId(id), qForm, "QST", null, null, qcm, Utils.getConnectedUser()));
+        }
     }
 
     public static Result score() {
@@ -106,7 +134,7 @@ public class QcmController extends Controller {
                 score = score.add(BigDecimal.ONE);
         }
         BigDecimal resultScore = score.multiply(BigDecimal.valueOf(20)).divide(maxScore, 1, RoundingMode.HALF_UP);
-        return ok(qcm.render(buildQcm(), qForm, resultScore.toString(), "EVAL", QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
+        return ok(qcm.render(new ArrayList<Question>(), qForm, resultScore.toString(), "EVAL", QcmDao.listAll(), answeredQuestIds, Utils.getConnectedUser()));
     }
 
     /**
@@ -168,7 +196,7 @@ public class QcmController extends Controller {
                 }
             }
         }
-        QcmDao.save(qcm);
+        QcmDao.saveOrUpdate(qcm);
         return redirect(routes.Admin.index());
     }
 
@@ -179,9 +207,9 @@ public class QcmController extends Controller {
     private static void persistXmlQuestToDbQuest(Questionnaire questionnaire) {
         Qcm qcm = new Qcm();
         qcm.name = questionnaire.getTitre();
-        qcm.category = questionnaire.getCategorie();
+        qcm.category = ".NET".equals(questionnaire.getCategorie())? CategoryEnum.DOT_NET:CategoryEnum.JAVA;
         qcm.questions = Utils.convertXmlQuestionsToDbQuest(questionnaire.getQuestion(), qcm);
-        QcmDao.save(qcm);
+        QcmDao.saveOrUpdate(qcm);
     }
 
     /**

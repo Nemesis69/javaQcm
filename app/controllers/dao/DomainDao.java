@@ -25,4 +25,8 @@ public class DomainDao {
     public static Domain getById(Long id) {
         return finder.byId(id);
     }
+
+    public static Domain getByLibelle(String libelle) {
+        return finder.where().eq("libelle", libelle.toUpperCase()).findUnique();
+    }
 }

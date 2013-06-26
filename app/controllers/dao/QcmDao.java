@@ -23,7 +23,7 @@ public class QcmDao {
         return finder.ref(id);
     }
 
-    public static void save(Qcm qcm) {
+    public static void saveOrUpdate(Qcm qcm) {
         if(qcm.id == null)
             qcm.save();
         else

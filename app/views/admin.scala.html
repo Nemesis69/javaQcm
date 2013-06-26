@@ -2,7 +2,7 @@
 @import helper._
 
 
-@main("OPEN - QCM JAVA / JEE : Admin", user){
+@main("OPEN - QCMs : Admin", user){
         @if(action == null || "".equals(action)){
             @if(flash().get("error") != null){
                 <p class="error">
@@ -77,44 +77,53 @@
             }
         }
         @if("QST".equals(action)){
+            @form(routes.Admin.index()){
+                <input type="submit" value="Retour QCMs"/>
+            }
+            <h2>Qcm en cours d'édition : </h2>
 
-<h1>Questions créées : (@questions.size())</h1>
-    @form(routes.Admin.index()){
-        <input type="submit" value="Retour QCMs"/>
-    }
-    @if(questions.size()> 0){
-    <table>
-        <tr>
-            <th>Libellé</th>
-            <th>Actions</th>
-        </tr>
-        @for(question <- questions) {
-        <tr>
-            <td class="tdQuestion">
-                @question.text
-            </td>
-            <td>@form(routes.Application.deleteQuestion(question.id, editedQcm.id), args = 'class -> "inlineForms") {
-                <input type="button" value="Delete" onclick="confirmDelete(this)">
+            @form(routes.QcmController.majQcm()){
+                @inputText(field=qcmForm("name"), args = '_label -> "Nom du QCM (*)")
+                @select(qcmForm("category"), utils.CategoryEnum.values().toList.map(v => (v.toString, Messages("" + v))),
+                '_label -> "Categorie")
+                <input type="hidden" value="@editedQcm.id"name="id"/>
+                <input type="submit" value="Enregistrer"/>
+            }
+
+            <h1>Questions créées : (@questions.size())</h1>
+
+            @if(questions.size()> 0){
+                <table>
+                    <tr>
+                        <th>Libellé</th>
+                        <th>Actions</th>
+                    </tr>
+                @for(question <- questions) {
+                    <tr>
+                        <td class="tdQuestion">
+                            @question.text
+                        </td>
+                        <td>
+                            @form(routes.ChoiceManager.editQuestion(question.id), args = 'class -> "inlineForms") {
+                            <input type="submit" value="Edit">
+                            }
+                            @form(routes.Application.deleteQuestion(question.id, editedQcm.id), args = 'class -> "inlineForms") {
+                                <input type="button" value="Delete" onclick="confirmDelete(this)">
+                            }
+                        </td>
+                    </tr>
                 }
-                @form(routes.ChoiceManager.editQuestion(question.id), args = 'class -> "inlineForms") {
-                <input type="submit" value="Edit">
-                }
-            </td>
-        </tr>
+                </table>
+            }
+
+        <h2>Créer une nouvelle question :</h2>
+
+            @form(routes.Application.createQuestion(editedQcm.id), args = 'id -> "qForms") {
+                @inputText(field=qForms("text"), args = '_label -> "* Texte de la question :" )
+                @select(qForms("domainIdValue"), QcmController.listDomains().map(v => (v.id.toString, Messages("" + v.libelle))),
+                    '_label -> "Domaine")
+                <input type="submit" value="Enregistrer">
+
+        }
     }
-    </table>
-    }
-
-<h2>Créer une nouvelle question :</h2>
-
-@form(routes.Application.createQuestion(editedQcm.id), args = 'id -> "qForms") {
-
-@inputText(field=qForms("text"), args = '_label -> "* Texte de la question :" )
-@select(qForms("domainIdValue"), QcmController.listDomains().map(v => (v.id.toString, Messages("" + v.libelle))),
-'_label -> "Domaine"
-)
-<input type="submit" value="Enregistrer">
-
-}
-}
 }

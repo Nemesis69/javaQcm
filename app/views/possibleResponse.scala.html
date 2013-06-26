@@ -1,16 +1,18 @@
-@(question: Question, rForms:Form[Choice], choices: List[Choice], editedQcm: Qcm, qForm: Form[Question], user: User)
+@(question: Question, rForms:Form[Choice], choices: List[Choice], editedQcm: Qcm, qForm: Form[Question], user: User, action: String, editedChoice: Choice)
 @import helper._
 
 @main("OPEN - QCM JAVA / JEE : Ajout de choix à la question", user){
+    @if("".equals(action) || action == null){
     @form(routes.Admin.retourQuestions(editedQcm.id), args = 'class -> "inlineForms"){
         <input type="submit" value="Retour questions"/>
     }
-
-
     <h2>Question en cours d'édition : (@question.text)</h2>
     @form(routes.Application.modifieQuestLibelle(question.id, editedQcm.id), args = 'class -> "inlineForms"){
         @inputText(field=qForm("text"), args = '_label -> "Libelle de la question :")
-        <input type="submit" value="Modifier"/>
+        @select(qForm("domainIdValue"), QcmController.listDomains().map(v => (v.id.toString, Messages("" + v.libelle))),
+        '_label -> "Domaine")
+        <input type="hidden" name="id" value="@question.id" />
+        <input type="submit" value="Enregistrer"/>
     }
     <br>
     <h3>liste des choix disponibles  : </h3>
@@ -28,10 +30,16 @@
                 @choice.status
             </td>
             <td>
+             @form(routes.ChoiceManager.editResponse(choice.id), args = 'class -> "inlineForms") {
+                <input type="submit" value="Edit"/>
+                }
+            </td>
+            <td>
             @form(routes.ChoiceManager.deleteResponse(choice.id), args = 'class -> "inlineForms") {
                 <input type="button" value="Delete" onclick="confirmDelete(this)">
             }
             </td>
+
          </tr>
         }
         </table>
@@ -57,4 +65,28 @@
         </dl>
     }
     </div>
+    }
+    @if("EDIT".equals(action)){
+        @form(routes.ChoiceManager.retourChoix(question.id)){
+            <input type="submit" value="Retour liste des choix" />
+        }
+        @form(routes.ChoiceManager.updResponse(), args = 'class-> "inlineForms") {
+            @inputText(field = rForms("libelle"), args = '_label -> "Réponse : (*) ")
+            <dl>
+                <dt><label for="status">Status : </label></dt>
+            <dd>
+                <select name="status" id="status">
+                    <option>OK</option>
+                    <option>KO</option>
+                </select>
+            </dd>
+            </dl>
+            <dl>
+            <dd>
+                <input type="hidden" name="id" value="@editedChoice.id"/>
+                <input type="submit" value="Enregistrer">
+            </dd>
+            </dl>
+        }
+    }
 }

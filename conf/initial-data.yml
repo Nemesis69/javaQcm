@@ -9,4 +9,18 @@ users:
         email:      nicolas.beucler@open-groupe.com
         password:   5ebe2294ecd0e0f08eab7690d2a6ee69
         isAdmin:    true
-    
+
+# Domains
+
+domains:
+    - !!models.Domain
+        libelle:    JAVA
+
+    - !!models.Domain
+        libelle:    JEE
+
+    - !!models.Domain
+        libelle:    FRAMEWORK
+
+    - !!models.Domain
+        libelle:    HIBERNATE

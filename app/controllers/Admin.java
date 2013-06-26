@@ -3,14 +3,13 @@ package controllers;
 
 import controllers.dao.QcmDao;
 import controllers.dao.QuestionDao;
-import controllers.dao.UserDao;
 import models.Qcm;
 import models.Question;
-import models.User;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
+import utils.Utils;
 import views.html.admin;
 
 
@@ -37,6 +36,6 @@ public class Admin extends Controller {
     }
 
     public static Result retourQuestions(Long qcmId) {
-        return ok(admin.render(QuestionDao.listByQcmId(qcmId), qForm, "QST", null, null, QcmDao.findById(qcmId), Utils.getConnectedUser()));
+        return ok(admin.render(QuestionDao.listByQcmId(qcmId), qForm, "QST", null, qcmForm.fill(QcmDao.findById(qcmId)), QcmDao.findById(qcmId), Utils.getConnectedUser()));
     }
 }

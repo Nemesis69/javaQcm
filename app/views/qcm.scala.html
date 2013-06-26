@@ -14,30 +14,29 @@
     }
 
     @if("EVAL".equals(action)){
-        <h1>Nombre de questions :  @questions.size()</h1>
         @if(score != null && !"0".equals(score)){
             <h1>score actuel : @score</h1>
         }
-
-        <h2>QCM : @questions.get(0).qcm.name</h2>
-        <ul>
-        @for(quest <- questions){
-            @if(answeredQuestIds.size() == 0 || !answeredQuestIds.contains(quest.id)){
-                <h3>@quest.text</h3>
-                @form(routes.QcmController.validateResponses(), args = 'class -> "inlineForms"){
-                    <input type="hidden" name="questionId" id="questionId" value="@quest.id"/>
-                    @for(choice <- quest.possibleResp){
-                        <input type="checkbox" name="selectedChoices" value="@choice.id"/>@choice.libelle<BR>
-                    }
-                    <input type="submit" value="Valider"/>
+        @if(questions.size() != 0){
+            <h1>Nombre de questions :  @questions.size()</h1>
+            <h2>QCM : @questions.get(0).qcm.name</h2>
+            <ul>
+            <h3>@questions.get(0).text</h3>
+            @form(routes.QcmController.validateResponses(), args = 'class -> "inlineForms"){
+                <input type="hidden" name="questionId" id="questionId" value="@questions.get(0).id"/>
+                @for(choice <- questions.get(0).possibleResp){
+                <input type="checkbox" name="selectedChoices" value="@choice.id"/>@choice.libelle<BR>
                 }
+                <input type="submit" value="Valider"/>
             }
-        }
-        </ul>
 
+            </ul>
+        }
         <ul>
-            @form(routes.QcmController.score()){
-                <input type="submit" value="Evaluer"/>
+            @if(questions.size() == 0 && (score == null || "0".equals(score))){
+                @form(routes.QcmController.score()){
+                    <input type="submit" value="Evaluer"/>
+                }
             }
         </ul>
     }

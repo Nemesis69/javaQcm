@@ -24,8 +24,11 @@ public class ChoiceDao extends Model {
         return finder.where().eq("questionId", id).findList();
     }
 
-    public static void save(Choice r){
-        r.save();
+    public static void saveOrUpdate(Choice r){
+        if(r.id == null)
+            r.save();
+        else
+            r.update();
     }
 
     public static void deleteResponse(Long id){

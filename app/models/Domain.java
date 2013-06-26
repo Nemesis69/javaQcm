@@ -2,6 +2,7 @@ package models;
 
 import play.db.ebean.Model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -19,6 +20,7 @@ public class Domain extends Model{
     @Id
     public Long id;
 
+    @Column(unique = true)
     public String libelle;
 
 }

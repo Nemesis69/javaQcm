@@ -3,13 +3,13 @@ package controllers;
 import controllers.dao.ChoiceDao;
 import controllers.dao.QcmDao;
 import controllers.dao.QuestionDao;
-import controllers.dao.UserDao;
 import models.Choice;
 import models.Question;
-import models.User;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
+import utils.Utils;
+import views.html.possibleResponse;
 
 import java.math.BigDecimal;
 
@@ -27,28 +27,28 @@ public class ChoiceManager extends Controller {
     private static Form<Question> qForm = Form.form(Question.class);
 
     public static Result index() {
-        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm, Utils.getConnectedUser()));
+        return ok(possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm, Utils.getConnectedUser(), "", null));
     }
 
 
     public static Result editQuestion(Long id) {
         setEditedQuestion(id);
-        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm, Utils.getConnectedUser()));
+        return ok(possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm.fill(editedQuestion), Utils.getConnectedUser(), "", null));
     }
 
     public static Result addResponses(Long questionId) {
         setEditedQuestion(questionId);
         Form<Choice> filledForm = rForm.bindFromRequest();
         if (filledForm.hasErrors()) {
-            return badRequest(views.html.possibleResponse.render(editedQuestion, filledForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm, Utils.getConnectedUser()));
+            return badRequest(possibleResponse.render(editedQuestion, filledForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm, Utils.getConnectedUser(), "", null));
         } else {
             Choice r = filledForm.get();
             r.questionRef = editedQuestion;
             if(Utils.STATUS_OK.equals(r.status)){
                 editedQuestion.qcm.maxScore.add(BigDecimal.ONE);
-                QcmDao.save(editedQuestion.qcm);
+                QcmDao.saveOrUpdate(editedQuestion.qcm);
             }
-            ChoiceDao.save(r);
+            ChoiceDao.saveOrUpdate(r);
             return redirect(routes.ChoiceManager.index());
         }
     }
@@ -57,13 +57,33 @@ public class ChoiceManager extends Controller {
         return (editedQuestion == null || editedQuestion.id != questionId) ? editedQuestion = QuestionDao.getQuestion(questionId) : editedQuestion;
     }
 
+    public static Result editResponse(Long id){
+        return ok(possibleResponse.render(editedQuestion, rForm.fill(ChoiceDao.getById(id)), ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm, Utils.getConnectedUser(), "EDIT", ChoiceDao.getById(id)));
+    }
+
+    public static Result updResponse(){
+        Form<Choice> filledForm = rForm.bindFromRequest();
+        if(filledForm.hasErrors()){
+            return badRequest(possibleResponse.render(editedQuestion, rForm.fill(filledForm.get()), ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm, Utils.getConnectedUser(), "EDIT", filledForm.get()));
+        }
+        else{
+            Choice c = filledForm.get();
+            ChoiceDao.saveOrUpdate(c);
+            return ok(possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm.fill(editedQuestion), Utils.getConnectedUser(), "", null));
+        }
+    }
+
+    public static Result retourChoix(Long id){
+        return ok(possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm.fill(editedQuestion), Utils.getConnectedUser(), "", null));
+    }
+
     public static Result deleteResponse(Long id) {
         Choice c = ChoiceDao.getById(id);
         if(Utils.STATUS_OK.equals(c.status)){
            c.questionRef.qcm.maxScore.subtract(BigDecimal.ONE);
         }
         ChoiceDao.deleteResponse(id);
-        return ok(views.html.possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm, Utils.getConnectedUser()));
+        return ok(possibleResponse.render(editedQuestion, rForm, ChoiceDao.listByQuestId(editedQuestion.id), editedQuestion.qcm, qForm, Utils.getConnectedUser(), "", null));
     }
 
 }

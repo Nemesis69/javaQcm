@@ -2,6 +2,7 @@ package models;
 
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
+import utils.CategoryEnum;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -27,7 +28,8 @@ public class Qcm extends Model {
     @OneToMany(mappedBy = "qcm", cascade = CascadeType.ALL)
     public List<Question> questions;
 
-    public String category;
+    @Column(name = "category")
+    public CategoryEnum category;
 
     public BigDecimal maxScore;
 }

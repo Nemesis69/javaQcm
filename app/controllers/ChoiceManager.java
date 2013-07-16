@@ -54,7 +54,7 @@ public class ChoiceManager extends Controller {
     }
 
     private static Question setEditedQuestion(Long questionId) {
-        return (editedQuestion == null || editedQuestion.id != questionId) ? editedQuestion = QuestionDao.getQuestion(questionId) : editedQuestion;
+        return (editedQuestion == null || !editedQuestion.id.equals(questionId)) ? editedQuestion = QuestionDao.getQuestion(questionId) : editedQuestion;
     }
 
     public static Result editResponse(Long id){

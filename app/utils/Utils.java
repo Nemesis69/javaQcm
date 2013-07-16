@@ -36,15 +36,14 @@ public class Utils extends Controller{
         MessageDigest msgDig = MessageDigest.getInstance("MD5");
         msgDig.update(user.password.getBytes(Charset.forName("UTF8")));
         byte[] hash = msgDig.digest();
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < hash.length; ++i) {
-            sb.append(Integer.toHexString((hash[i] & 0xFF) | 0x100).substring(1,3));
+        StringBuilder sb = new StringBuilder();
+        for (byte aHash : hash) {
+            sb.append(Integer.toHexString((aHash & 0xFF) | 0x100).substring(1, 3));
         }
         return sb.toString();
     }
 
     public static Questionnaire convertDbQuestToXmlQuest(Qcm qcm) throws DatatypeConfigurationException {
-        List<Question> questions = qcm.questions;
         ObjectFactory objectFactory = new ObjectFactory();
         Questionnaire xmlQuestionnaire = objectFactory.createQuestionnaire();
         xmlQuestionnaire.setTitre(qcm.name);

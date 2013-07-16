@@ -169,8 +169,6 @@ public class QcmController extends Controller {
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart filePart = body.getFile("xml");
         if (filePart != null) {
-            String fileName = filePart.getFilename();
-            String contentType = filePart.getContentType();
             File file = filePart.getFile();
             JAXBContext jaxbContext = JAXBContext.newInstance(Questionnaire.class);
             Unmarshaller unMarsh = jaxbContext.createUnmarshaller();

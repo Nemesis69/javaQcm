@@ -34,8 +34,7 @@ public class UserController extends Controller {
           flash().put("error", "cet utilisateur existe déjà");
             return badRequest(views.html.user.render(filledForm, Utils.getConnectedUser()));
         } else {
-            String pass = Utils.getMd5String(u);
-            u.password = pass;
+            u.password = Utils.getMd5String(u);
             UserDao.createUser(u);
             return redirect(routes.Application.index());
         }

@@ -19,7 +19,6 @@ public class SecurityManager extends Security.Authenticator {
 
     @Override
     public String getUsername(Http.Context ctx) {
-        Map<String, String[]> headers = ctx.request().headers();
         LoginController.redirectUri = ctx.request().uri();
         if("/admin".equals(ctx.request().uri())){
             User user = UserDao.findUserByMail(ctx.session().get("user"));
